@@ -1,4 +1,4 @@
-#pydecorate - python module for labelling 
+# pydecorate - python module for labelling 
 # and adding colour scales to images
 # 
 #Copyright (C) 2011  Hrobjartur Thorsteinsson
@@ -42,12 +42,15 @@ default_style_dict = {
 
 class DecoratorBase(object):
     def __init__(self,image):
-        self.image=image
+        """
+        Probably users only want to instantiate DecoratorAgg or the Decorator implementations.
+        DecoratorBase is a base class outlining common operations and interface for the Decorator (PIL drawing engine) and DecoratorAgg (Aggdraw drawing engine)
+        """
+        self.image = image
         
         import copy
         self.style = copy.deepcopy(default_style_dict)
 
-        
     def set_style(self, **kwargs):
         self.style.update(kwargs)
         self.style['cursor'] = list(self.style['cursor'])
