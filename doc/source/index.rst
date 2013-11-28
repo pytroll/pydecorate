@@ -20,7 +20,7 @@ Contents:
    installation
    usage
    examples
-
+   api
 
 Indices and tables
 ==================
