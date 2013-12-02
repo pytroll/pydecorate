@@ -3,12 +3,6 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. meta::
-   :description: Python project adding logos, texts, and color scales to PIL
-   images
-   :keywords: Python, image, PIL, Pytroll, pydecorate, trollimage, logos,
-   paltte, color scale, text
-
 Welcome to Pydecorate's documentation!
 ======================================
 
