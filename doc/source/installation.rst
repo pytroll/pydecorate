@@ -1,3 +1,5 @@
+.. _aggdraw: http://effbot.org/zone/aggdraw-index.htm
+
 Installation
 ------------
 
@@ -13,7 +15,15 @@ and then run::
 
 Transparency and antialiasing using AGG
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The default plotting mode of pydecorate uses PIL for rendering. PIL does not support antialiasing and opacity. The AGG engine can be used for making high quality images using the aggdraw_ module.
+The default plotting mode of pydecorate uses PIL for rendering. 
+However, PIL does not support antialiasing and opacity. 
+The AGG engine can be used for making high quality images using the aggdraw_ module.
+
+First make sure you have libfreetype and it's development files installed - on debian based systems you might do:
+
+.. code-block:: bash
+
+    $> sudo apt-get install libfreetype6 libfreetype6-dev
 
 First install the aggdraw_ module. Please not that aggdraw_ is getting old and may have the following problems in building.
 pip and easy_install may not solve these problems, so we recommend manual install.
