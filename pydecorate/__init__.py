@@ -16,11 +16,8 @@
 #You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import numpy as np
 from PIL import Image, ImageFont
 import ImageDraw
-import math
 
 # style dictionary defines default options
 # some only used by aggdraw version of the decorator
