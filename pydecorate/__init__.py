@@ -28,6 +28,7 @@ default_style_dict = {
 'width':60,
 'propagation':[1,0],
 'newline_propagation':[0,1],
+'alignment':[0.0,0.0],
 'bg':'white',
 'bg_opacity':127,
 'outline':None,
@@ -59,21 +60,41 @@ class DecoratorBase(object):
         pass
 
     def bottom_align(self):
-        x_size, y_size = self.image.size
-        self.style['cursor'][1] = y_size
+        self.style['alignment'][1] = 1.0
+        self.style['newline_propagation'][1] = -1
+        self.home()
 
     def top_align(self):
-        self.style['cursor'][1] = 0
+        self.style['alignment'][1] = 0.0
+        self.style['newline_propagation'][1] = 1
+        self.home()
 
     def right_align(self):
-        pass
+        self.style['alignment'][0] = 1.0
+        self.style['propagation'][0] = -1
+        self.home()
 
     def left_align(self):
-        pass
+        self.style['alignment'][0] = 0.0
+        self.style['propagation'][0] = 1
+        self.home()
+
+    def home(self):
+        self.style['cursor'][0] = int( self.style['alignment'][0] * self.image.size[0] )
+        self.style['cursor'][1] = int( self.style['alignment'][1] * self.image.size[1] )
+
+    def rewind(self):
+        if self.style['newline_propagation'][0] == 0:
+            self.style['cursor'][0] = int( self.style['alignment'][0] * self.image.size[0] )
+        if self.style['newline_propagation'][1] == 0:
+            self.style['cursor'][1] = int( self.style['alignment'][1] * self.image.size[1] )
 
     def new_line(self):
-        self.style['cursor'][0] += self.style['newline_propagation'][0] * self.style['propagation'][0] * self.style['width'] 
-        self.style['cursor'][1] += self.style['newline_propagation'][1] * self.style['propagation'][1] * self.style['height'] 
+        # set new line
+        self.style['cursor'][0] += self.style['newline_propagation'][0] * self.style['width']
+        self.style['cursor'][1] += self.style['newline_propagation'][1] * self.style['height']
+        # rewind
+        self.rewind()
 
     def _step_cursor(self):
         self.style['cursor'][0] += self.style['propagation'][0] * self.style['width']
@@ -137,14 +158,22 @@ class DecoratorBase(object):
             self.style['height'] = int(hh+2*my)
         self.style['width'] = int(tw+2*mx)
 
-        # draw text bg
-        x1 = x + tw + 2*mx
-        y1 = y + self.style['height']
+        # draw base
+        px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
+        py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
+        x1 = x + px*(tw + 2*mx)
+        y1 = y + py*self.style['height']
         self._add_rectangle(draw,[x,y,x1,y1],**self.style)
         
         # draw
         for i in range(len(txt_nl)):
-            self._add_text_line(draw,(x+mx,y+i*th+my),txt_nl[i], self.style['font'], fill=self.style['fill'])
+            pos_x = x + mx
+            pos_y = y + i*th+my
+            if py < 0:
+                pos_y += py*self.style['height']
+            if px < 0:
+                pos_x += px*self.style['width']
+            self._add_text_line(draw,(pos_x,pos_y),txt_nl[i], self.style['font'], fill=self.style['fill'])
 
         # update cursor
         self._step_cursor()
@@ -189,20 +218,23 @@ class DecoratorBase(object):
         
         # default logo sizes ...
         # use previously set line_size
-        ny = self.style['height']
+        ny = self.style['height'] 
         nyi = int(round(ny-2*my))
         nxi = int(round(nyi/aspect))
-        nx = nxi + 2*mx
+        nx = (nxi + 2*mx)
         logo = logo.resize((nxi,nyi),resample=Image.ANTIALIAS)
         
         # draw base
-        self._add_rectangle(draw,[x,y,x+nx,y+ny],**self.style)
+        px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
+        py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
+        box = [x, y, x+px*nx, y+py*ny]
+        self._add_rectangle(draw,box,**self.style)
 
         #finalize
         self._finalize(draw)
 
         # paste logo
-        box=(int(round(x+mx)),int(round(y+my)),int(round(x+mx+nxi)),int(round(y+my+nyi)))
+        box = [x+px*mx, y+py*my, x+px*mx+px*nxi, y+py*my+py*nyi]
         self._insert_RGBA_image(logo,box)
  
         # update cursor
@@ -210,7 +242,19 @@ class DecoratorBase(object):
         self.style['height'] = int(ny)
         self._step_cursor()
 
+    def _form_xy_box(self,box):
+        newbox = box + []
+        if box[0] > box[2]:
+            newbox[0] = box[2]
+            newbox[2] = box[0]
+        if box[1] > box[3]:
+            newbox[1] = box[3]
+            newbox[3] = box[1]
+        return newbox
+
     def _insert_RGBA_image(self,img,box):
+        # make sure box is formed tl to br corners:
+        box = self._form_xy_box(box)
         # crop area for compositing
         crop=self.image.crop(box)
         comp=Image.composite(img,crop,img)
