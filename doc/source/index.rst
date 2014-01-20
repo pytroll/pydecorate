@@ -9,8 +9,8 @@
    keywords: Python, image, PIL, Pytroll, pydecorate, trollimage, logos,
    palette, color scale, text
 
-Welcome to Pydecorate's documentation!
-======================================
+Welcome to the Pydecorate documentation!
+=========================================
 
 Pydecorate is a package for decorating PIL images with logos, texts, and color
 scales.
@@ -19,7 +19,8 @@ The source code of the package can be found at google codes, googlecode_
 
 .. _googlecode: http://code.google.com/p/pydecorate/
 
-Contents:
+Contents
++++++++++
 
 .. toctree::
    :maxdepth: 3
@@ -30,7 +31,7 @@ Contents:
    api
 
 Indices and tables
-==================
++++++++++++++++++++
 
 * :ref:`genindex`
 * :ref:`modindex`
