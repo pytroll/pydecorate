@@ -16,8 +16,15 @@
 #You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PIL import Image, ImageFont
-import ImageDraw
+try:
+    from PIL import Image, ImageFont
+except ImportError:
+    print "ImportError: Missing PIL image objects"
+
+try:
+    import ImageDraw
+except ImportError:
+    print "ImportError: Missing module: ImageDraw"
 
 # style dictionary defines default options
 # some only used by aggdraw version of the decorator

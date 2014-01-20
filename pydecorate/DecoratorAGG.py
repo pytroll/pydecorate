@@ -15,9 +15,12 @@
 #
 #You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from DecoratorBase import DecoratorBase
-from PIL import Image, ImageFont
-import ImageDraw
+from pydecorate.DecoratorBase import DecoratorBase
+
+try:
+    import ImageDraw
+except ImportError:
+    print "ImportError: Missing module: ImageDraw"
 
 class DecoratorAGG(DecoratorBase):
     def add_scale(self,color_def,font=None,size=None,fill='black',
