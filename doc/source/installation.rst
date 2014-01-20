@@ -1,5 +1,10 @@
 .. _aggdraw: http://effbot.org/zone/aggdraw-index.htm
 
+.. sectnum::
+   :depth: 4
+   :start: 1
+   :suffix: .
+
 Installation
 ------------
 

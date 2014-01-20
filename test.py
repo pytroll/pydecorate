@@ -10,7 +10,33 @@ font_scale=aggdraw.Font("white","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSeri
 
 img = Image.open('BMNG_clouds_201109181715_areaT2.png')
 
+
 dc = DecoratorAGG(img)
+font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=16)
+dc.add_text("MSG SEVIRI\nThermal blue marble\n1/1/1977 00:00",font=font)
+dc.add_logo("logos/pytroll_light_big.png")
+dc.add_logo("logos/NASA_Logo.gif")
+#dc.align_right()
+#dc.align_bottom()
+#dc.add_logo("logos/pytroll_light_big.png")
+#dc.add_logo("logos/NASA_Logo.gif")
+#dc.add_text("This is manually\nplaced text\nover here.",cursor=[400,480])
+dc.new_line()
+dc.add_text("This here is\na new line\nof features")
+dc.add_logo("logos/pytroll_light_big.png")
+
+dc.align_right()
+dc.write_vertically()
+dc.add_text("Now writing\nvertically",height=0)
+dc.add_logo("logos/pytroll_light_big.png")
+dc.add_logo("logos/NASA_Logo.gif")
+
+
+img.show()
+exit()
+
+
+
 #dc.toggle_direction()
 dc.add_logo("logos/pytroll_light_big.png",height=60)
 dc.add_logo("logos/NASA_Logo.gif")

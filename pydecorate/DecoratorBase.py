@@ -59,32 +59,64 @@ class DecoratorBase(object):
         """
         pass
 
-    def toggle_direction(self):
-        self.style['propagation']=[self.style['propagation'][1],self.style['propagation'][0]]
-        self.style['newline_propagation']=[self.style['newline_propagation'][1],self.style['newline_propagation'][0]]
+    def write_vertically(self):
+        # top-right
+        if self.style['alignment'][0] == 1.0 and self.style['alignment'][1] == 0.0:
+            self.style['propagation']=[0,1]
+            self.style['newline_propagation']=[-1,0]
+        # bottom-right 
+        elif self.style['alignment'][0] == 1.0 and self.style['alignment'][1] == 1.0:
+            self.style['propagation']=[0,-1]
+            self.style['newline_propagation']=[-1,0]
+        # bottom-left
+        elif self.style['alignment'][0] == 0.0 and self.style['alignment'][1] == 1.0:
+            self.style['propagation']=[0,-1]
+            self.style['newline_propagation']=[1,0]
+        # top-left and other alignments
+        else:
+            self.style['propagation']=[0,1]
+            self.style['newline_propagation']=[1,0]
 
-    def bottom_align(self):
+    def write_horizontally(self):
+        # top-right
+        if self.style['alignment'][0] == 1.0 and self.style['alignment'][1] == 0.0:
+            self.style['propagation']=[-1,0]
+            self.style['newline_propagation']=[0,1]
+        # bottom-right 
+        elif self.style['alignment'][0] == 1.0 and self.style['alignment'][1] == 1.0:
+            self.style['propagation']=[-1,0]
+            self.style['newline_propagation']=[0,-1]
+        # bottom-left
+        elif self.style['alignment'][0] == 0.0 and self.style['alignment'][1] == 1.0:
+            self.style['propagation']=[1,0]
+            self.style['newline_propagation']=[0,-1]
+        # top-left and other alignments
+        else:
+            self.style['propagation']=[1,0]
+            self.style['newline_propagation']=[0,1]
+
+    def align_bottom(self):
         if self.style['alignment'][1] != 1.0:
             self.style['alignment'][1] = 1.0
             self.style['newline_propagation'][1] = -self.style['newline_propagation'][1]
             self.style['propagation'][1] = -self.style['propagation'][1]
             self.home()
 
-    def top_align(self):
+    def align_top(self):
         if self.style['alignment'][1] != 0.0:
             self.style['alignment'][1] = 0.0
             self.style['newline_propagation'][1] = -self.style['newline_propagation'][1]
             self.style['propagation'][1] = -self.style['propagation'][1]
             self.home()
 
-    def right_align(self):
+    def align_right(self):
         if self.style['alignment'][0] != 1.0:
             self.style['alignment'][0] = 1.0
             self.style['propagation'][0] = -self.style['propagation'][0]
             self.style['newline_propagation'][0] = -self.style['newline_propagation'][0]
             self.home()
 
-    def left_align(self):
+    def align_left(self):
         if self.style['alignment'][0] != 0.0:
             self.style['alignment'][0] = 0.0
             self.style['propagation'][0] = -self.style['propagation'][0]
