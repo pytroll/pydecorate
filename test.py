@@ -8,14 +8,42 @@ import aggdraw
 font=aggdraw.Font("navy","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=20)
 font_scale=aggdraw.Font("white","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=12)
 
+from trollimage.colormap import rdbu
+rdbu.set_range(-90, 10)
+print type(rdbu)
+
+
 img = Image.open('BMNG_clouds_201109181715_areaT2.png')
-
-
 dc = DecoratorAGG(img)
 font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=16)
-dc.add_text("MSG SEVIRI\nThermal blue marble\n1/1/1977 00:00",font=font)
+
+dc.write_vertically()
+#dc.add_text("MSG SEVIRI\nThermal blue marble\n1/1/1977 00:00",font=font)
 dc.add_logo("logos/pytroll_light_big.png")
 dc.add_logo("logos/NASA_Logo.gif")
+dc.add_scale(rdbu,extend=True)
+
+
+img.show()
+exit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #dc.align_right()
 #dc.align_bottom()
 #dc.add_logo("logos/pytroll_light_big.png")

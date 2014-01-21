@@ -43,7 +43,8 @@ default_style_dict = {
 'fill':'black',
 'fill_opacity':255,
 'font':None,
-'start_border':[0,0]
+'start_border':[0,0],
+'extend':False
 }
 
 class DecoratorBase(object):
@@ -299,6 +300,73 @@ class DecoratorBase(object):
         self.style['width'] = int(nx)
         self.style['height'] = int(ny)
         self._step_cursor()
+
+    def _add_scale(self, colormap, **kwargs):
+        # synchronize kwargs into style
+        self.set_style(**kwargs)
+
+        # sizes, current xy and margins
+        x=self.style['cursor'][0]
+        y=self.style['cursor'][1]
+        mx=self.style['margins'][0]
+        my=self.style['margins'][1]
+        x_size,y_size = self.image.size
+
+        # horizontal/vertical?
+        is_vertical = False
+        if self.style['propagation'][1] != 0:
+            is_vertical = True
+        
+        # adjust new size based on extend (fill space) style,
+        if self.style['extend']:
+            if self.style['propagation'][0] == 1:
+                self.style['width'] = (x_size - x)
+            elif self.style['propagation'][0] == -1:
+                self.style['width'] = x
+            if self.style['propagation'][1] == 1:
+                self.style['height'] = (y_size - y)
+            elif self.style['propagation'][1] == -1:
+                self.style['height'] = y
+
+        # draw object
+        draw = self._get_canvas(self.image)
+        
+        # draw base
+        px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
+        py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
+        x1 = x + px*self.style['width']
+        y1 = y + py*self.style['height']
+        self._add_rectangle(draw,[x,y,x1,y1],**self.style)
+
+        # scale dimensions
+        scale_width = self.style['width'] - 2*mx
+        scale_height = self.style['height'] - 2*my
+        
+        # generate color scale image obj inset by margin size mx my,
+        import numpy as np
+        from trollimage.image import Image as TImage
+        
+        #### THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION ####
+        minval,maxval = colormap.values[0],colormap.values[-1]
+        
+        if is_vertical:
+            linedata = np.ones((scale_width,1)) * np.arange(minval,maxval,(maxval-minval)/scale_height)
+            linedata = linedata.transpose()
+        else:
+            linedata = np.ones((scale_height,1)) * np.arange(minval,maxval,(maxval-minval)/scale_width)
+
+        timg = TImage(linedata,mode="L")
+        timg.colorize(colormap)
+        scale = timg.pil_image()
+        ###########################################################
+
+        # finalize (must be before paste)
+        self._finalize(draw)
+
+        # paste scale onto image
+        pos =(min(x,x1)+mx,min(y,y1)+my)
+        self.image.paste(scale,pos)
+                
 
     def _form_xy_box(self,box):
         newbox = box + []

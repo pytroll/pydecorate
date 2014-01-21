@@ -23,37 +23,8 @@ except ImportError:
     print "ImportError: Missing module: ImageDraw"
 
 class DecoratorAGG(DecoratorBase):
-    def add_scale(self,color_def,font=None,size=None,fill='black',
-                  outline=None, outline_width=1, bg='white',extend=False,unit='',margins=None,minortick=0.0,
-                  nan_color=(0,0,0), nan_check_color=(1,1,1), nan_check_size=0):
-        """ Todo
-        """
-        self._add_scale(color_def,font=font,size=size,fill=fill,
-                        outline=outline,outline_widht=outline_width,bg=bg,extend=extend,unit=unit,margins=margins,minortick=minortick,
-                        nan_color=nan_color, nan_check_color=nan_check_color, nan_check_size=nan_check_size)
-
-    def _load_default_font(self):
-        return ImageFont.load_default()
-
-    def add_text(self,txt,**kwargs):
-        self._add_text(txt,**kwargs)
-
-    def add_logo(self,logo_path,**kwargs):
-        self._add_logo(logo_path,**kwargs)
-        
-
-    def _get_canvas(self,image):
-        """Returns PIL image object
-        """    
-        return ImageDraw.Draw(image)
-
-class DecoratorAGG(DecoratorBase):
-    def add_scale(self,color_def,font=None,size=None,fill='black',fill_opacity=255,
-                  outline=None,outline_width=1.0,outline_opacity=255,bg='white',bg_opacity=255,extend=False,unit='',margins=None,minortick=0.0,
-                  nan_color=(0,0,0), nan_check_color=(1,1,1), nan_check_size=0):
-          self._add_scale(color_def,font=font,size=size,fill=fill,fill_opacity=fill_opacity,
-                          outline=outline,outline_opacity=outline_opacity,outline_width=outline_width,bg=bg,bg_opacity=bg_opacity,extend=extend,unit=unit,margins=margins,minortick=minortick,
-                          nan_color=nan_color, nan_check_color=nan_check_color, nan_check_size=nan_check_size)
+    def add_scale(self,colormap,**kwargs):
+        self._add_scale(colormap,**kwargs)
 
     def _load_default_font(self):
         import aggdraw
