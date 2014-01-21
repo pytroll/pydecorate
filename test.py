@@ -17,7 +17,7 @@ img = Image.open('BMNG_clouds_201109181715_areaT2.png')
 dc = DecoratorAGG(img)
 font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=16)
 
-dc.write_vertically()
+#dc.write_vertically()
 #dc.add_text("MSG SEVIRI\nThermal blue marble\n1/1/1977 00:00",font=font)
 dc.add_logo("logos/pytroll_light_big.png")
 dc.add_logo("logos/NASA_Logo.gif")

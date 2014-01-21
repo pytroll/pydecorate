@@ -38,13 +38,19 @@ default_style_dict = {
 'alignment':[0.0,0.0],
 'bg':'white',
 'bg_opacity':127,
+'line':"black",
+'line_width':1,
+'line_opacity':255,
 'outline':None,
+'outline_width':1,
 'outline_opacity':255,
 'fill':'black',
 'fill_opacity':255,
 'font':None,
 'start_border':[0,0],
-'extend':False
+'extend':False,
+'tick_marks':1.0,
+'minor_tick_marks':0.1
 }
 
 class DecoratorBase(object):
@@ -236,8 +242,8 @@ class DecoratorBase(object):
     def _add_text_line(self,draw,xy,text,font,fill='black'):
         draw.text(xy,text, font=font, fill=fill)
         
-    def _add_line(self,draw,xys,outline='black'):
-        draw.line(xys,fill=outline) # inconvenient to use fill for a line so swapped def.
+    def _add_line(self,draw,xys,**kwargs):
+        draw.line(xys,fill=kwargs['line']) # inconvenient to use fill for a line so swapped def.
 
     def _add_rectangle(self,draw,xys,**kwargs):
         # adjust extent of rectangle to draw up to but not including xys[2/3]
@@ -366,7 +372,20 @@ class DecoratorBase(object):
         # paste scale onto image
         pos =(min(x,x1)+mx,min(y,y1)+my)
         self.image.paste(scale,pos)
+
+        # reload draw object
+        draw = self._get_canvas(self.image)
+
+        # draw tick marks
+        x_steps = np.arange(x+mx, x+mx+scale_width, scale_width/((maxval-minval)/self.style['tick_marks']))
+        for xs in x_steps:
+            print xs
+            self._add_line(draw,[(xs,y+mx),(xs,y+scale_height/2.0)],**self.style)
+        
                 
+
+        # finalize
+        self._finalize(draw)
 
     def _form_xy_box(self,box):
         newbox = box + []

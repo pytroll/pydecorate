@@ -49,7 +49,7 @@ class DecoratorAGG(DecoratorBase):
         draw.flush()
 
     def _add_text_line(self,draw,xy,text,font,fill='black'):
-        draw.text(xy,text, font)
+        draw.text(xy, text, font)
 
     def _add_rectangle(self,draw,xys,outline='white',bg='white',bg_opacity=255,outline_width=1,outline_opacity=255,**kwargs):
         import aggdraw
@@ -72,12 +72,12 @@ class DecoratorAGG(DecoratorBase):
 
         
 
-    def _add_line(self,draw,xys,outline='black',outline_width=1,outline_opacity=255):
+    def _add_line(self,draw,xys,**kwargs):
         import aggdraw
-        if outline is None: 
+        if kwargs['line'] is None: 
             pen=None
         else:
-            pen=aggdraw.Pen(outline,width=outline_width,opacity=outline_opacity)
+            pen=aggdraw.Pen(kwargs['line'],width=kwargs['line_width'],opacity=kwargs['line_opacity'])
         xys_straight=[ item for t in xys for item in t ]
         draw.line(xys_straight,pen)
 
