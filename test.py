@@ -21,6 +21,7 @@ font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",
 #dc.add_text("MSG SEVIRI\nThermal blue marble\n1/1/1977 00:00",font=font)
 dc.add_logo("logos/pytroll_light_big.png")
 dc.add_logo("logos/NASA_Logo.gif")
+#dc.align_right()
 dc.add_scale(rdbu,extend=True)
 
 

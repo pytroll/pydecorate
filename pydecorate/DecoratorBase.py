@@ -276,12 +276,12 @@ class DecoratorBase(object):
         
         # default logo sizes ...
         # use previously set line_size
-        if self.style['newline_propagation'][1] != 0:
+        if self.style['propagation'][0] != 0:
             ny = self.style['height'] 
             nyi = int(round(ny-2*my))
             nxi = int(round(nyi/aspect))
             nx = (nxi + 2*mx)
-        elif self.style['newline_propagation'][0] != 0:
+        elif self.style['propagation'][1] != 0:
             nx = self.style['width']
             nxi = int(round(nx-2*mx))
             nyi = int(round(nxi*aspect))
@@ -377,10 +377,10 @@ class DecoratorBase(object):
         draw = self._get_canvas(self.image)
 
         # draw tick marks
-        x_steps = np.arange(x+mx, x+mx+scale_width, scale_width/((maxval-minval)/self.style['tick_marks']))
-        for xs in x_steps:
-            print xs
-            self._add_line(draw,[(xs,y+mx),(xs,y+scale_height/2.0)],**self.style)
+        #x_steps = np.arange(x+mx, x+mx+scale_width, scale_width/((maxval-minval)/self.style['tick_marks']))
+        #for xs in x_steps:
+        #    print xs
+        #    self._add_line(draw,[(xs,y+mx),(xs,y+scale_height/2.0)],**self.style)
         
                 
 
