@@ -195,7 +195,7 @@ of the previously added feature and allows it to expand to the necessary height.
 	:width: 400px
 	:align: center
 
-Styles
+styles
 ^^^^^^^^^^^^^^
 more to come here...
 

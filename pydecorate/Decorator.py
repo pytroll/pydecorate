@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 try:
-    import ImageDraw
+    from PIL import ImageDraw
 except ImportError:
     print "ImportError: Missing module: ImageDraw"
 

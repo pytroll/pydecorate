@@ -18,7 +18,7 @@
 from pydecorate.DecoratorBase import DecoratorBase
 
 try:
-    import ImageDraw
+    from PIL import ImageDraw
 except ImportError:
     print "ImportError: Missing module: ImageDraw"
 
