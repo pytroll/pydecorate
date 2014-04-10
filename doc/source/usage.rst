@@ -197,6 +197,47 @@ of the previously added feature and allows it to expand to the necessary height.
 
 styles
 ^^^^^^^^^^^^^^
-more to come here...
+The decorator style settings is a dictionary of
+options that is retentive between successive operations
+(state machine), all except for the :attr:`cursor` attribute
+which is propagative as mentioned before,
+
+    >>> default_style_dict = {
+    'cursor':[0,0],
+    'margins':[5,5],
+    'height':60,
+    'width':60,
+    'propagation':[1,0],
+    'newline_propagation':[0,1],
+    'alignment':[0.0,0.0],
+    'bg':'white',
+    'bg_opacity':127,
+    'line':"black",
+    'line_width':1,
+    'line_opacity':255,
+    'outline':None,
+    'outline_width':1,
+    'outline_opacity':255,
+    'fill':'black',
+    'fill_opacity':255,
+    'font':None,
+    'start_border':[0,0],
+    'extend':False,
+    'tick_marks':1.0,
+    'minor_tick_marks':0.1
+    }
+
+For example, when if at some point we define a new
+background color and margins, this style does not have
+to be repeated on successive calls,
+
+    >>> dc.add_logo("logos/pytroll_light_big.png")
+    >>> dc.add_logo("logos/NASA_Logo.gif",margins=[10,10],bg='yellow')
+    >>> dc.add_logo("logos/pytroll_light_big.png")
+    >>> dc.add_text("Some text",font=font)
+
+.. image:: images/style_retention.png
+	:width: 400px
+	:align: center
 
 

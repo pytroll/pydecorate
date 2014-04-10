@@ -15,17 +15,22 @@ print type(rdbu)
 
 img = Image.open('BMNG_clouds_201109181715_areaT2.png')
 dc = DecoratorAGG(img)
-font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=16)
+
 
 #dc.write_vertically()
-#dc.add_text("MSG SEVIRI\nThermal blue marble\n1/1/1977 00:00",font=font)
 dc.add_logo("logos/pytroll_light_big.png")
-dc.add_logo("logos/NASA_Logo.gif")
+dc.add_logo("logos/NASA_Logo.gif",margins=[10,10],bg='yellow')
+dc.add_logo("logos/pytroll_light_big.png")
+font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=16)
+dc.add_text("Some text",font=font)
+
+
 #dc.align_right()
-dc.add_scale(rdbu,extend=True)
+#dc.add_scale(rdbu,extend=True)
 
 
 img.show()
+img.save("style_retention.png")
 exit()
 
 
