@@ -45,13 +45,12 @@ class DecoratorAGG(DecoratorBase):
     def _finalize(self, draw):
         """Flush the AGG image object
         """
-        
         draw.flush()
 
-    def _add_text_line(self,draw,xy,text,font,fill='black'):
+    def _draw_text_line(self,draw,xy,text,font,fill='black'):
         draw.text(xy, text, font)
 
-    def _add_rectangle(self,draw,xys,outline='white',bg='white',bg_opacity=255,outline_width=1,outline_opacity=255,**kwargs):
+    def _draw_rectangle(self,draw,xys,outline='white',bg='white',bg_opacity=255,outline_width=1,outline_opacity=255,**kwargs):
         import aggdraw
         pen=aggdraw.Pen(outline,width=outline_width,opacity=outline_opacity)
         brush=aggdraw.Brush(bg,opacity=bg_opacity)
@@ -72,7 +71,7 @@ class DecoratorAGG(DecoratorBase):
 
         
 
-    def _add_line(self,draw,xys,**kwargs):
+    def _draw_line(self,draw,xys,**kwargs):
         import aggdraw
         if kwargs['line'] is None: 
             pen=None
@@ -81,7 +80,7 @@ class DecoratorAGG(DecoratorBase):
         xys_straight=[ item for t in xys for item in t ]
         draw.line(xys_straight,pen)
 
-    def _add_polygon(self,draw,xys,outline=None,fill='white',fill_opacity=255,outline_width=1,outline_opacity=255):
+    def _draw_polygon(self,draw,xys,outline=None,fill='white',fill_opacity=255,outline_width=1,outline_opacity=255):
         import aggdraw
         if outline is None:
             pen=None

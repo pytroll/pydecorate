@@ -16,6 +16,8 @@
 #You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import numpy as np
+
 try:
     from PIL import Image, ImageFont
 except ImportError:
@@ -167,10 +169,10 @@ class DecoratorBase(object):
     #    x1=self._cursor[0]
     #    y1=self._cursor[1]+self._line_size[1]
     #    draw=self._get_canvas(self.image)
-    #    self._add_rectangle(draw,[x0,y0,x1,y1],bg=None,**kwargs)
+    #    self._draw_rectangle(draw,[x0,y0,x1,y1],bg=None,**kwargs)
     #    self._finalize(draw)
 
-    def _add_polygon(self,draw,xys,**kwargs):
+    def _draw_polygon(self,draw,xys,**kwargs):
         draw.polygon(xys,fill=kwargs['fill'],outline=kwargs['outline'])
 
     def _get_canvas(self, img):
@@ -179,7 +181,36 @@ class DecoratorBase(object):
     def _load_default_font(self):
         raise NotImplementedError("Derived class implements this.")
 
-    def _add_text(self,txt,**kwargs): 
+    def _draw_text(self, draw, xy, txt, font, fill='black', align='cc', dry_run=False, **kwargs):
+        """
+        Elementary text draw routine,
+        with alignment. Returns text size.
+        """
+        # check for font object
+        if font is None:
+            font = self._load_default_font()
+
+        # calculate text space
+        tw, th = draw.textsize(txt, font)
+
+        # align text position
+        x, y = xy
+        if align[0] == 'c':
+            x -= tw/2.0
+        elif align[0] == 'r':
+            x -= tw
+        if align[1] == 'c':
+            y -= th/2.0
+        elif align[1] == 'r':
+            y -= th
+        
+        # draw the text
+        if not dry_run:
+            self._draw_text_line(draw, (x,y), txt, font, fill=fill)
+
+        return tw,th
+
+    def _add_text(self, txt, **kwargs): 
         # synchronize kwargs into style
         self.set_style(**kwargs)
 
@@ -207,7 +238,7 @@ class DecoratorBase(object):
         # calculate text space
         tw,th = draw.textsize(txt_nl[0],self.style['font'])
         for t in txt_nl:
-            w,tmp = draw.textsize(t,self.style['font'])
+            w, tmp = draw.textsize(t,self.style['font'])
             if w > tw: tw = w
         hh=len(txt_nl)*th
 
@@ -221,7 +252,7 @@ class DecoratorBase(object):
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
         x1 = x + px*(tw + 2*mx)
         y1 = y + py*self.style['height']
-        self._add_rectangle(draw,[x,y,x1,y1],**self.style)
+        self._draw_rectangle(draw, [x,y,x1,y1], **self.style)
         
         # draw
         for i in range(len(txt_nl)):
@@ -231,7 +262,7 @@ class DecoratorBase(object):
                 pos_y += py*self.style['height']
             if px < 0:
                 pos_x += px*self.style['width']
-            self._add_text_line(draw,(pos_x,pos_y),txt_nl[i], self.style['font'], fill=self.style['fill'])
+            self._draw_text_line(draw, (pos_x,pos_y), txt_nl[i], self.style['font'], fill=self.style['fill'])
 
         # update cursor
         self._step_cursor()
@@ -239,18 +270,18 @@ class DecoratorBase(object):
         # finalize
         self._finalize(draw)
 
-    def _add_text_line(self,draw,xy,text,font,fill='black'):
+    def _draw_text_line(self, draw, xy, text, font, fill='black'):
         draw.text(xy,text, font=font, fill=fill)
         
-    def _add_line(self,draw,xys,**kwargs):
+    def _draw_line(self,draw,xys,**kwargs):
         draw.line(xys,fill=kwargs['line']) # inconvenient to use fill for a line so swapped def.
 
-    def _add_rectangle(self,draw,xys,**kwargs):
+    def _draw_rectangle(self,draw,xys,**kwargs):
         # adjust extent of rectangle to draw up to but not including xys[2/3]
         xys[2]-=1
         xys[3]-=1
         if kwargs['bg'] or kwargs['outline']:
-            draw.rectangle(xys,fill=kwargs['bg'],outline=kwargs['outline'])
+            draw.rectangle(xys, fill=kwargs['bg'], outline=kwargs['outline'])
 
     def _add_logo(self, logo_path, **kwargs):
         # synchronize kwargs into style
@@ -293,7 +324,7 @@ class DecoratorBase(object):
         px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
         box = [x, y, x+px*nx, y+py*ny]
-        self._add_rectangle(draw,box,**self.style)
+        self._draw_rectangle(draw,box,**self.style)
 
         #finalize
         self._finalize(draw)
@@ -342,14 +373,13 @@ class DecoratorBase(object):
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
         x1 = x + px*self.style['width']
         y1 = y + py*self.style['height']
-        self._add_rectangle(draw,[x,y,x1,y1],**self.style)
+        self._draw_rectangle(draw,[x,y,x1,y1],**self.style)
 
         # scale dimensions
         scale_width = self.style['width'] - 2*mx
         scale_height = self.style['height'] - 2*my
         
         # generate color scale image obj inset by margin size mx my,
-        import numpy as np
         from trollimage.image import Image as TImage
         
         #### THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION ####
@@ -377,11 +407,26 @@ class DecoratorBase(object):
         draw = self._get_canvas(self.image)
 
         # draw tick marks
-        #x_steps = np.arange(x+mx, x+mx+scale_width, scale_width/((maxval-minval)/self.style['tick_marks']))
-        #for xs in x_steps:
-        #    print xs
-        #    self._add_line(draw,[(xs,y+mx),(xs,y+scale_height/2.0)],**self.style)
-        
+        val_steps =  _round_arange( minval, maxval , self.style['tick_marks'] )
+        form = "%"+str(3)+"d"
+        last_x = x+px*mx
+        last_y = y+py*my
+        ref_w, ref_h = self._draw_text(draw, (0,0), form%(val_steps[0]), dry_run=True, **self.style)
+
+        if is_vertical:
+            y_steps = py*(val_steps - minval)*scale_height/(maxval-minval)+y+py*my
+            for i, ys in enumerate(y_steps):
+                self._draw_line(draw,[(x+px*mx,ys),(x+px*(mx+scale_width/3.0),ys)],**self.style)
+                if abs(ys-last_y)>ref_h:
+                    self._draw_text(draw,(x+px*(mx+2*scale_width/3.0),ys), (form%(val_steps[i])).strip(), **self.style)
+                    last_y = ys
+        else:
+            x_steps = px*(val_steps - minval)*scale_width/(maxval-minval)+x+px*mx
+            for i, xs in enumerate(x_steps):
+                self._draw_line(draw,[(xs,y+py*my),(xs,y+py*(my+scale_height/3.0))],**self.style)
+                if abs(xs-last_x)>ref_w:
+                    self._draw_text(draw,(xs, y+py*(my+2*scale_height/3.0)), (form%(val_steps[i])).strip(), **self.style)
+                    last_x = xs
                 
 
         # finalize
@@ -404,3 +449,16 @@ class DecoratorBase(object):
         crop=self.image.crop(box)
         comp=Image.composite(img,crop,img)
         self.image.paste(comp,box)
+
+def  _round_arange(val_min, val_max , dval):
+    """
+    Returns an array of values in the range from valmin to valmax
+    but with stepping, dval. This is similar to numpy.arange except 
+    the values must be rounded to the nearest multiple of dval.
+    """
+    vals = np.arange(val_min, val_max, dval)
+    round_vals = vals - vals%dval
+    if round_vals[0] < val_min:
+        round_vals = round_vals[1:]
+    return round_vals
+        

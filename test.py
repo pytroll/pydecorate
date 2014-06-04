@@ -26,8 +26,17 @@ dc.add_text("Some text",font=font)
 
 
 #dc.align_right()
-#dc.add_scale(rdbu,extend=True)
+print rdbu.values
+print rdbu.colors
+dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100)
 
+dc.align_bottom()
+dc.add_scale(rdbu, extend=True, tick_marks=2.0, line_opacity=100, width=60)
+
+dc.align_right()
+dc.write_vertically()
+
+dc.add_scale(rdbu, extend=True, tick_marks=2.0, line_opacity=100, width=60)
 
 img.show()
 img.save("style_retention.png")
