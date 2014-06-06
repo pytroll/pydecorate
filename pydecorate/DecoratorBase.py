@@ -52,7 +52,8 @@ default_style_dict = {
 'start_border':[0,0],
 'extend':False,
 'tick_marks':1.0,
-'minor_tick_marks':0.1
+'minor_tick_marks':0.5,
+'unit':None
 }
 
 class DecoratorBase(object):
@@ -365,6 +366,15 @@ class DecoratorBase(object):
             elif self.style['propagation'][1] == -1:
                 self.style['height'] = y
 
+        # set scale spacer for units and other
+        x_spacer = 0
+        y_spacer = 0
+        if self.style['unit']:
+            if is_vertical:
+                y_spacer = 40
+            else:
+                x_spacer = 40
+
         # draw object
         draw = self._get_canvas(self.image)
         
@@ -376,8 +386,8 @@ class DecoratorBase(object):
         self._draw_rectangle(draw,[x,y,x1,y1],**self.style)
 
         # scale dimensions
-        scale_width = self.style['width'] - 2*mx
-        scale_height = self.style['height'] - 2*my
+        scale_width = self.style['width'] - 2*mx - x_spacer
+        scale_height = self.style['height'] - 2*my - y_spacer
         
         # generate color scale image obj inset by margin size mx my,
         from trollimage.image import Image as TImage
@@ -408,26 +418,54 @@ class DecoratorBase(object):
 
         # draw tick marks
         val_steps =  _round_arange( minval, maxval , self.style['tick_marks'] )
-        form = "%"+str(3)+"d"
+        minor_steps =  _round_arange( minval, maxval , self.style['minor_tick_marks'] )
+
+        ffra, fpow = _optimize_scale_numbers( minval, maxval, self.style['tick_marks'] )
+        form = "%"+"."+str(ffra)+"f"
+        print form
         last_x = x+px*mx
         last_y = y+py*my
         ref_w, ref_h = self._draw_text(draw, (0,0), form%(val_steps[0]), dry_run=True, **self.style)
 
         if is_vertical:
+            # major
             y_steps = py*(val_steps - minval)*scale_height/(maxval-minval)+y+py*my
+            y_steps = y_steps[::-1]
             for i, ys in enumerate(y_steps):
                 self._draw_line(draw,[(x+px*mx,ys),(x+px*(mx+scale_width/3.0),ys)],**self.style)
                 if abs(ys-last_y)>ref_h:
                     self._draw_text(draw,(x+px*(mx+2*scale_width/3.0),ys), (form%(val_steps[i])).strip(), **self.style)
                     last_y = ys
+            # minor
+            y_steps = py*(minor_steps - minval)*scale_height/(maxval-minval)+y+py*my
+            y_steps = y_steps[::-1]
+            for i, ys in enumerate(y_steps):
+                self._draw_line(draw,[(x+px*mx,ys),(x+px*(mx+scale_width/6.0),ys)],**self.style)
         else:
+            # major
             x_steps = px*(val_steps - minval)*scale_width/(maxval-minval)+x+px*mx
             for i, xs in enumerate(x_steps):
                 self._draw_line(draw,[(xs,y+py*my),(xs,y+py*(my+scale_height/3.0))],**self.style)
                 if abs(xs-last_x)>ref_w:
                     self._draw_text(draw,(xs, y+py*(my+2*scale_height/3.0)), (form%(val_steps[i])).strip(), **self.style)
                     last_x = xs
+            # minor
+            x_steps = px*(minor_steps - minval)*scale_width/(maxval-minval)+x+px*mx
+            for i, xs in enumerate(x_steps):
+                self._draw_line(draw,[(xs,y+py*my),(xs,y+py*(my+scale_height/6.0))],**self.style)
                 
+
+        # draw unit and/or power if set
+        if self.style['unit']:
+            # calculate position
+            if is_vertical:
+                x = x + mx + scale_width/2.0
+                y = y + my + scale_height + y_spacer/2.0
+            else:
+                x = x + mx + scale_width + x_spacer/2.0
+                y = y + my + scale_height/2.0
+            # draw marking
+            self._draw_text(draw,(x,y),self.style['unit'],**self.style)
 
         # finalize
         self._finalize(draw)
@@ -462,3 +500,14 @@ def  _round_arange(val_min, val_max , dval):
         round_vals = round_vals[1:]
     return round_vals
         
+def _optimize_scale_numbers( minval, maxval, dval ):
+    """
+    find a suitable number format, A and B in "%A.Bf" and power if numbers are large
+    for display of scale numbers.
+    """
+    ffra = 1
+    # no fractions, so turn off remainder
+    if dval%1.0 == 0.0:
+        ffra=0
+        
+    return ffra,0

@@ -6,9 +6,10 @@ from pydecorate import DecoratorAGG
 import aggdraw
 
 font=aggdraw.Font("navy","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=20)
-font_scale=aggdraw.Font("white","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=12)
+font_scale=aggdraw.Font("black","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=12)
 
 from trollimage.colormap import rdbu
+rdbu.colors = rdbu.colors[::-1]
 rdbu.set_range(-90, 10)
 print type(rdbu)
 
@@ -18,25 +19,28 @@ dc = DecoratorAGG(img)
 
 
 #dc.write_vertically()
-dc.add_logo("logos/pytroll_light_big.png")
-dc.add_logo("logos/NASA_Logo.gif",margins=[10,10],bg='yellow')
-dc.add_logo("logos/pytroll_light_big.png")
+#dc.add_logo("logos/pytroll_light_big.png")
+#dc.add_logo("logos/NASA_Logo.gif",margins=[10,10],bg='yellow')
+#dc.add_logo("logos/pytroll_light_big.png")
 font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=16)
-dc.add_text("Some text",font=font)
+#dc.add_text("Some text",font=font)
 
 
 #dc.align_right()
 print rdbu.values
 print rdbu.colors
-dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100)
+dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
 
-dc.align_bottom()
-dc.add_scale(rdbu, extend=True, tick_marks=2.0, line_opacity=100, width=60)
+#dc.align_bottom()
+#dc.add_scale(rdbu, extend=True, tick_marks=2.0, line_opacity=100, width=60)
 
 dc.align_right()
 dc.write_vertically()
 
-dc.add_scale(rdbu, extend=True, tick_marks=2.0, line_opacity=100, width=60)
+#dc.add_scale(rdbu, extend=True, font=font_scale, tick_marks=2.0, line_opacity=100, width=60, unit='K')
+
+#dc.align_left()
+#dc.add_scale(rdbu, extend=True, font=font_scale, tick_marks=2.0, minor_tick_marks=1.0, line_opacity=100, width=60, unit='K')
 
 img.show()
 img.save("style_retention.png")
