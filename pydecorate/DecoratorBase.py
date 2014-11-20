@@ -355,6 +355,16 @@ class DecoratorBase(object):
         if self.style['propagation'][1] != 0:
             is_vertical = True
         
+        # left/right?
+        is_right = False
+        if self.style['alignment'][0] == 1.0:
+            is_right = True
+
+        # top/bottom?
+        is_bottom = False
+        if self.style['alignment'][1] == 1.0:
+            is_bottom = True
+
         # adjust new size based on extend (fill space) style,
         if self.style['extend']:
             if self.style['propagation'][0] == 1:
@@ -394,7 +404,7 @@ class DecoratorBase(object):
         
         #### THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION ####
         minval,maxval = colormap.values[0],colormap.values[-1]
-        
+
         if is_vertical:
             linedata = np.ones((scale_width,1)) * np.arange(minval,maxval,(maxval-minval)/scale_height)
             linedata = linedata.transpose()
@@ -417,19 +427,20 @@ class DecoratorBase(object):
         draw = self._get_canvas(self.image)
 
         # draw tick marks
-        val_steps =  _round_arange( minval, maxval , self.style['tick_marks'] )
+        val_steps =  _round_arange2( minval, maxval , self.style['tick_marks'] )
         minor_steps =  _round_arange( minval, maxval , self.style['minor_tick_marks'] )
 
         ffra, fpow = _optimize_scale_numbers( minval, maxval, self.style['tick_marks'] )
         form = "%"+"."+str(ffra)+"f"
-        print form
         last_x = x+px*mx
         last_y = y+py*my
         ref_w, ref_h = self._draw_text(draw, (0,0), form%(val_steps[0]), dry_run=True, **self.style)
 
         if is_vertical:
             # major
-            y_steps = py*(val_steps - minval)*scale_height/(maxval-minval)+y+py*my
+            offset_start = val_steps[0]  - minval
+            offset_end   = val_steps[-1] - maxval 
+            y_steps = py*(val_steps - minval - offset_start - offset_end)*scale_height/(maxval-minval)+y+py*my
             y_steps = y_steps[::-1]
             for i, ys in enumerate(y_steps):
                 self._draw_line(draw,[(x+px*mx,ys),(x+px*(mx+scale_width/3.0),ys)],**self.style)
@@ -459,11 +470,17 @@ class DecoratorBase(object):
         if self.style['unit']:
             # calculate position
             if is_vertical:
-                x = x + mx + scale_width/2.0
+                if is_right:
+                    x = x - mx - scale_width/2.0
+                else:
+                    x = x + mx + scale_width/2.0
                 y = y + my + scale_height + y_spacer/2.0
             else:
                 x = x + mx + scale_width + x_spacer/2.0
-                y = y + my + scale_height/2.0
+                if is_bottom:
+                    y = y - my - scale_height/2.0
+                else:
+                    y = y + my + scale_height/2.0
             # draw marking
             self._draw_text(draw,(x,y),self.style['unit'],**self.style)
 
@@ -499,7 +516,23 @@ def  _round_arange(val_min, val_max , dval):
     if round_vals[0] < val_min:
         round_vals = round_vals[1:]
     return round_vals
-        
+     
+def  _round_arange2(val_min, val_max , dval):
+    """
+    Returns an array of values in the range from valmin to valmax
+    but with stepping, dval. This is similar to numpy.linspace except 
+    the values must be rounded to the nearest multiple of dval.
+    The difference to _round_arange is that the return values include 
+    also the bounary value val_max.
+    """
+    val_min_round = val_min + (dval-val_min%dval)%dval
+    val_max_round = val_max - val_max%dval
+    n_points = int((val_max_round-val_min_round)/dval)+1
+    vals = np.linspace( val_min_round, val_max_round, num=n_points)
+
+    return vals
+     
+   
 def _optimize_scale_numbers( minval, maxval, dval ):
     """
     find a suitable number format, A and B in "%A.Bf" and power if numbers are large
