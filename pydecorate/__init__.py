@@ -1,6 +1,6 @@
-# pydecorate - python module for labelling 
+# pydecorate - python module for labelling
 # and adding colour scales to images
-# 
+#
 #Copyright (C) 2011  Hrobjartur Thorsteinsson
 #
 #This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from DecoratorAGG import DecoratorAGG
+from DecoratorCairo import DecoratorCairo
 
 
-                        

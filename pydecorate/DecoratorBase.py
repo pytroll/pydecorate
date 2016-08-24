@@ -32,7 +32,7 @@ except ImportError:
 # some only used by aggdraw version of the decorator
 default_style_dict = {
 'cursor':[0,0],
-'margins':[5,5],
+'margins':[20,20],
 'height':60,
 'width':60,
 'propagation':[1,0],

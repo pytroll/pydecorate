@@ -22,29 +22,28 @@ dc = DecoratorAGG(img)
 #dc.add_logo("logos/pytroll_light_big.png")
 #dc.add_logo("logos/NASA_Logo.gif",margins=[10,10],bg='yellow')
 #dc.add_logo("logos/pytroll_light_big.png")
-font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=16)
+font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=35)
 #dc.add_text("Some text",font=font)
 
 
 #dc.align_right()
 print rdbu.values
 print rdbu.colors
-dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
+#dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
 
 #dc.align_bottom()
 #dc.add_scale(rdbu, extend=True, tick_marks=2.0, line_opacity=100, width=60)
 
 #dc.align_right()
 #dc.write_vertically()
-dc.align_bottom()
-dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
+#dc.align_bottom()
+#dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
 
 #dc.align_left()
 #dc.add_scale(rdbu, extend=True, font=font_scale, tick_marks=2.0, minor_tick_marks=1.0, line_opacity=100, width=60, unit='K')
 
-img.show()
+
 #img.save("style_retention.png")
-exit()
 
 
 
@@ -63,20 +62,21 @@ exit()
 
 
 
-#dc.align_right()
-#dc.align_bottom()
+
+dc.align_right()
+dc.align_top()
 #dc.add_logo("logos/pytroll_light_big.png")
 #dc.add_logo("logos/NASA_Logo.gif")
 #dc.add_text("This is manually\nplaced text\nover here.",cursor=[400,480])
-dc.new_line()
-dc.add_text("This here is\na new line\nof features")
+#dc.new_line()
+dc.add_text("This here is\na new line\nof features\niojdfsiobjdfioj")
 dc.add_logo("logos/pytroll_light_big.png")
 
-dc.align_right()
-dc.write_vertically()
-dc.add_text("Now writing\nvertically",height=0)
-dc.add_logo("logos/pytroll_light_big.png")
-dc.add_logo("logos/NASA_Logo.gif")
+#dc.align_right()
+#dc.write_vertically()
+#dc.add_text("Now writing\nvertically",height=0)
+#dc.add_logo("logos/pytroll_light_big.png")
+#dc.add_logo("logos/NASA_Logo.gif")
 
 
 img.show()
