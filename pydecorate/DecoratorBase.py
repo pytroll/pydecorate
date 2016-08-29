@@ -31,11 +31,11 @@ except ImportError:
 # style dictionary defines default options
 # some only used by aggdraw version of the decorator
 default_style_dict = {
-'cursor':[0,0],
-'margins':[20,20],
-'height':60,
+'cursor':[0,0], # x,y current coordinates of the cursor
+'margins':[20,20], # margins of the enclosing boxes
+'height':60, 
 'width':60,
-'propagation':[1,0],
+'propagation':[1,0], 
 'newline_propagation':[0,1],
 'alignment':[0.0,0.0],
 'bg':'white',

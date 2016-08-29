@@ -240,7 +240,6 @@ class DecoratorCairo(DecoratorBase):
             if w > tw: tw = w
         hh=len(txt_nl)*th
         
-        print("th: %s, hh: %s" % (th, hh))
 
         # set height/width for subsequent draw operations
         if prev_height < int(hh+2*my): 
@@ -302,6 +301,8 @@ class DecoratorCairo(DecoratorBase):
         #crop=self.image.crop(box)
         #comp=Image.composite(img,crop,img)
         #self.image.paste(comp,box)
+        
+        
         x = self.style['cursor'][0]
         y = self.style['cursor'][1]
         mx = self.style['margins'][0]
@@ -312,15 +313,16 @@ class DecoratorCairo(DecoratorBase):
         print("pos_x: %s, pos_y: %s" % (pos_x, pos_y))
         print("x: %s, y: %s" % (x, y))
         print("mx: %s, my: %s" % (mx, my))
+
+        self.context.save()
+        self.context.scale(0.1,0.1)
+        self.context.set_source_surface(img, x*9, y*9)
         
-        img.putalpha(256)
-        arr = numpy.array(img)
-        height, width, channels = arr.shape
-        logo_surface = cairo.ImageSurface.create_for_data(arr, cairo.FORMAT_RGB24, width, height)
-        logo_pattern = cairo.SurfacePattern(logo_surface)
-        self.context.set_source_surface(logo_surface, pos_x, pos_y)
         #self.context.mask(logo_pattern)
         self.context.paint()
+        self.context.restore()
+        
+        
         
     def _add_logo(self, logo_path, **kwargs):
         # synchronize kwargs into style
@@ -329,54 +331,58 @@ class DecoratorCairo(DecoratorBase):
         print("adding logo...")
         
         # current xy and margins
-        x=self.style['cursor'][0]
-        y=self.style['cursor'][1]
+        x = self.style['cursor'][0]
+        y = self.style['cursor'][1]
 
-        mx=self.style['margins'][0]
-        my=self.style['margins'][1]
+        marg_x = self.style['margins'][0]
+        marg_y = self.style['margins'][1]
 
         # draw object
         #draw = self._get_canvas(self.image)
 
         # get logo image
-        logo=Image.open(logo_path,"r").convert('RGBA')
+        
+        #logo=Image.open(logo_path,"r").convert('RGBA')
+        logo_surface = cairo.ImageSurface.create_from_png(logo_path)
+        
         
         # default size is _line_size set by previous draw operation
         # else do not resize
-        nx,ny=logo.size
-        aspect=float(ny)/nx
+        logo_width = logo_surface.get_width()
+        logo_height = logo_surface.get_height()
+        aspect = float(logo_height)/logo_width
         
         # default logo sizes ...
         # use previously set line_size
         if self.style['propagation'][0] != 0:
-            ny = self.style['height'] 
-            nyi = int(round(ny-2*my))
+            logo_height = self.style['height'] 
+            nyi = int(round(logo_height-2*marg_y))
             nxi = int(round(nyi/aspect))
-            nx = (nxi + 2*mx)
+            logo_width = (nxi + 2*marg_x)
         elif self.style['propagation'][1] != 0:
-            nx = self.style['width']
-            nxi = int(round(nx-2*mx))
+            logo_width = self.style['width']
+            nxi = int(round(logo_width-2*marg_x))
             nyi = int(round(nxi*aspect))
-            ny = (nyi + 2*my)
+            logo_height = (nyi + 2*marg_y)
 
-        logo = logo.resize((nxi,nyi),resample=Image.ANTIALIAS)
+        #logo = logo.resize((nxi,nyi),resample=Image.ANTIALIAS)
         
         # draw base
         px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
-        box = [x, y, x+px*nx, y+py*ny]
+        box = [x, y, x+px*logo_width, y+py*logo_height]
         #self._draw_rectangle(draw,box,**self.style)
 
         #finalize
         #self._finalize(draw)
-
+        
         # paste logo
-        box = [x+px*mx, y+py*my, x+px*mx+px*nxi, y+py*my+py*nyi]
-        self._insert_RGBA_image(logo,box)
- 
+        box = [x+px*marg_x, y+py*marg_y, x+px*marg_x+px*nxi, y+py*marg_y+py*nyi]
+        self._insert_RGBA_image(logo_surface,box)
+        
         # update cursor
-        self.style['width'] = int(nx)
-        self.style['height'] = int(ny)
+        self.style['width'] = int(logo_width)
+        self.style['height'] = int(logo_height)
         self._step_cursor()
 
 

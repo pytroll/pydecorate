@@ -37,28 +37,13 @@ print rdbu.colors
 #dc.align_right()
 #dc.write_vertically()
 #dc.align_bottom()
-#dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
+dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
 
 #dc.align_left()
 #dc.add_scale(rdbu, extend=True, font=font_scale, tick_marks=2.0, minor_tick_marks=1.0, line_opacity=100, width=60, unit='K')
 
 
 #img.save("style_retention.png")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
