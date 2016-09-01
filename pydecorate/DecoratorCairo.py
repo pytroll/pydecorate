@@ -15,7 +15,10 @@
 #
 #You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from pydecorate.DecoratorBase import DecoratorBase
+
+import numpy as np
 
 try:
     from PIL import Image, ImageFont
@@ -33,9 +36,16 @@ except ImportError:
     print "ImportError: Missing module: ImageDraw"
     
 import numpy
-
+import os
    
 class DecoratorCairo(DecoratorBase):
+    """
+    Allows to draw text and overlays on images.
+    
+    Extends DecoratorBase. Uses Cairo as drawing library instead of Aggdraw.
+    
+    
+    """
 
     def __init__(self, image):
         self.surface = cairo.ImageSurface.create_from_png('BMNG_clouds_201109181715_areaT2.png')
@@ -45,29 +55,9 @@ class DecoratorCairo(DecoratorBase):
         self.style['bg'] = (255,255,255)
         self.style['bg_opacity'] = 0.5
         self.style['line'] = (0, 0, 0)
-        self.style['line_opacity'] = 1
+        self.style['line_opacity'] = 1107
         
-        
-    def test_func(self): 
-        # self.context.set_source_rgb(1 , 0 , 0.5)
-        # self.align_top()
-        # self.align_left()
-        # self.add_text("TOP L \nancora TOP L")
-        # self.align_left()
-        # self.align_bottom()
-        # self.add_text("BOT L \nancora BOT L")
-        # self.align_right()
-        # self.add_text("BOT R\nfraseeeeeeee luuuuunnngggghhiiiiiiiiisisssssisssisisissmissisisma")
-        # self.align_center_x()
-        # self.align_center_y()
-        # self.add_text("X")
-        # self.context.rectangle(10,10,20,20)
-        # self.context.move_to(30,30)
-        # self.context.rel_line_to(90,90)
-        # self.context.stroke()
-        # self.context.fill()
-        pass
-        
+     
     def write_vertically(self):
         super(DecoratorCairo, self).write_vertically()
 
@@ -90,9 +80,10 @@ class DecoratorCairo(DecoratorBase):
         self._add_scale(colormap,**kwargs)
 
     def _load_default_font(self):
-        import aggdraw
-        return aggdraw.Font("black","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=16)
-
+        # Koe: loading fonts in Cairo is done through the context 
+        # isn't necessary to instantiate a font object and return it
+        cairo_select_font_face (cr, "monospace", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+        
     def add_text(self,txt,**kwargs):
         self._add_text(txt, **kwargs)
         
@@ -100,43 +91,45 @@ class DecoratorCairo(DecoratorBase):
         self._add_logo(logo_path,**kwargs)
         
     def _get_canvas(self,image):
-        """Returns AGG image object
+        """ Returns AGG image object
         """
-        import aggdraw
-        return aggdraw.Draw(image)
+        # Koe: the AGG image object is "translated" in self.surface.
+        # I decided to create it once on __init__ and keep that single instance
+        # for the entire run, making this function unnecessary.
+        # This can be reverted if needed.
+        raise NotImplementedError("not implemented yet")
         
     def save_png(self):
-        self.context.save()
+        ## FIXME Koe: testing path and name, NEEDS to be changed
         self.surface.write_to_png("boh.png")
         self.surface.finish()
 
     def _finalize(self, draw):
-        raise NotImplementedError("not implemented yet")
-
+        """Do any need finalization of the drawing
+        """
+        #raise NotImplementedError("not implemented yet")
+        pass
+        
     def _draw_line(self,draw,xys,**kwargs):
         raise NotImplementedError("not implemented yet")
 
     def _draw_polygon(self, draw,xys,outline=None,fill='white', fill_opacity=255,outline_width=1, outline_opacity=255):
-        import aggdraw
-        if outline is None:
-            pen=None
-        else:
-            pen=aggdraw.Pen(outline,width=outline_width,opacity=outline_opacity)
-        if fill is None:
-            brush=None
-        else:
-            brush=aggdraw.Brush(fill,opacity=fill_opacity)
-        xys_straight=[ item for t in xys for item in t ]
-        draw.polygon(xys_straight,pen,brush)
+        raise NotImplementedError("not implemented yet")
+        # import aggdraw
+        # if outline is None:
+            # pen=None
+        # else:
+            # pen=aggdraw.Pen(outline,width=outline_width,opacity=outline_opacity)
+        # if fill is None:
+            # brush=None
+        # else:
+            # brush=aggdraw.Brush(fill,opacity=fill_opacity)
+        # xys_straight=[ item for t in xys for item in t ]
+        # draw.polygon(xys_straight,pen,brush)
         
     def set_style(self, **kwargs):
         self.style.update(kwargs)
         self.style['cursor'] = list(self.style['cursor'])
-
-    def _finalize(self, draw):
-        """Do any need finalization of the drawing
-        """
-        pass
 
     def home(self):
         super(DecoratorCairo, self).home()
@@ -153,59 +146,12 @@ class DecoratorCairo(DecoratorBase):
     def _load_default_font(self):
         #temporary toy-method
         self.context.select_font_face("Serif", 1, 1)
-    
-        
-    #def start_border(self):
-    #    self.style['start_border'] = list( self.style['cursor'] )
-    #    
-    #def end_border(self,**kwargs):
-    #    x0=self._start_border[0]
-    #    y0=self._start_border[1]
-    #    x1=self._cursor[0]
-    #    y1=self._cursor[1]+self._line_size[1]
-    #    draw=self._get_canvas(self.image)
-    #    self._draw_rectangle(draw,[x0,y0,x1,y1],bg=None,**kwargs)
-    #    self._finalize(draw)
 
     def _draw_polygon(self,draw,xys,**kwargs):
         draw.polygon(xys,fill=kwargs['fill'],outline=kwargs['outline'])
 
-    def _get_canvas(self, img):
-        raise NotImplementedError("Derived class implements this.")
-
-    def _draw_text(self, draw, xy, txt, font, fill='black', align='cc', dry_run=False, **kwargs):
-        """
-        Elementary text draw routine,
-        with alignment. Returns text size.
-        """
-        # check for font object
-        if font is None:
-            font = self._load_default_font()
-            
-        self.context.set_source_rgb(self.style['line'][0], self.style['line'][1], self.style['line'][2])
-
-        # calculate text space
-        tw, th = draw.textsize(txt, font)
-
-        # align text position
-        x, y = xy
-        if align[0] == 'c':
-            x -= tw/2.0
-        elif align[0] == 'r':
-            x -= tw
-        if align[1] == 'c':
-            y -= th/2.0
-        elif align[1] == 'r':
-            y -= th
-        
-        # draw the text
-        if not dry_run:
-            self._draw_text_line(draw, (x,y), txt, font, fill=fill)
-
-        return tw,th
-
     def _add_text(self, txt, **kwargs): 
-     
+    
         # synchronize kwargs into style
         self.set_style(**kwargs)
 
@@ -249,22 +195,30 @@ class DecoratorCairo(DecoratorBase):
         # draw base
         px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
-        x1 = x + px*(tw + 2*mx)
-        y1 = y + py*self.style['height']
+        x1 = px*self.style['width']
+        y1 = py*self.style['height']
         
         pos_x = x + mx
         pos_y = y + my
-        if py < 0:
-            pos_y += py*self.style['height']
-        if px < 0:
-            pos_x += px*self.style['width']
-        self._draw_rectangle(None, [pos_x + bearing_x - mx, pos_y + bearing_y - my, tw + 2 * mx, hh + 2 * my], **self.style)
+        
+        # if py < 0:
+            # pos_y += py*self.style['height']
+        # if px < 0:
+            # pos_x += px*self.style['width']
+        
+        print("text: x=%s, y=%s, x1=%s, y1=%s" % (x,y,x1,y1))
+        self._draw_rectangle(None, [x, y, x1, y1], **self.style)
+        
+        
         
         # draw
         for i in range(len(txt_nl)):
+            pos_x = x + mx
             pos_y = y + i*th+my
             if py < 0:
                 pos_y += py*self.style['height']
+            if px < 0:
+                pos_x += px*self.style['width']
             self._draw_text_line(None, (pos_x, pos_y), txt_nl[i], self.style['font'], fill = self.style['fill'])
     
         # update cursor
@@ -287,8 +241,7 @@ class DecoratorCairo(DecoratorBase):
         #xys[3]-=1
         self.context.set_source_rgba(self.style['bg'][0], self.style['bg'][0], self.style['bg'][0], self.style['bg_opacity'])
         if kwargs['bg'] or kwargs['outline']:
-            self.context.set_line_width(1)
-            #draw.rectangle(xys, fill=kwargs['bg'], outline=kwargs['outline'])
+            #self.context.set_line_width(1)
             self.context.rectangle(xys[0], xys[1], xys[2], xys[3])
         self.context.fill()
         
@@ -296,55 +249,28 @@ class DecoratorCairo(DecoratorBase):
     def _insert_RGBA_image(self,img,box):
         # make sure box is formed tl to br corners:
         
-        #box = self._form_xy_box(box)
-        # crop area for compositing
-        #crop=self.image.crop(box)
-        #comp=Image.composite(img,crop,img)
-        #self.image.paste(comp,box)
+        ## FIXME Koe: scaling need to be implemented, possibily without changing
+        ## the method signature
         
-        
-        x = self.style['cursor'][0]
-        y = self.style['cursor'][1]
-        mx = self.style['margins'][0]
-        my = self.style['margins'][1]
-        pos_x = x - mx
-        pos_y = y + my
-        
-        print("pos_x: %s, pos_y: %s" % (pos_x, pos_y))
-        print("x: %s, y: %s" % (x, y))
-        print("mx: %s, my: %s" % (mx, my))
-
         self.context.save()
         self.context.scale(0.1,0.1)
-        self.context.set_source_surface(img, x*9, y*9)
-        
-        #self.context.mask(logo_pattern)
+        self.context.set_source_surface(img, (box[0] + abs(box[2])/4)*10, (box[1] + (box[3])/4)*10)
         self.context.paint()
         self.context.restore()
-        
-        
         
     def _add_logo(self, logo_path, **kwargs):
         # synchronize kwargs into style
         self.set_style(**kwargs)
-
-        print("adding logo...")
-        
         # current xy and margins
         x = self.style['cursor'][0]
         y = self.style['cursor'][1]
-
         marg_x = self.style['margins'][0]
         marg_y = self.style['margins'][1]
-
-        # draw object
-        #draw = self._get_canvas(self.image)
-
-        # get logo image
         
-        #logo=Image.open(logo_path,"r").convert('RGBA')
-        logo_surface = cairo.ImageSurface.create_from_png(logo_path)
-        
+        try:
+            logo_surface = cairo.ImageSurface.create_from_png(logo_path)
+        except:
+            print("logo file not available or not in png format")
         
         # default size is _line_size set by previous draw operation
         # else do not resize
@@ -370,15 +296,26 @@ class DecoratorCairo(DecoratorBase):
         # draw base
         px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
-        box = [x, y, x+px*logo_width, y+py*logo_height]
+        rectangle_box = [x, y, px*logo_width, py*logo_height]
+        
+        print("logo: x=%s, y=%s, x1=%s, y1=%s" % (x,y,px*logo_width,py*logo_height))
+
+        
+        self._draw_rectangle(None, rectangle_box, **self.style)
+        
+        
+
+        #box = [x, y, x+px*logo_width, y+py*logo_height]
         #self._draw_rectangle(draw,box,**self.style)
 
         #finalize
         #self._finalize(draw)
         
         # paste logo
-        box = [x+px*marg_x, y+py*marg_y, x+px*marg_x+px*nxi, y+py*marg_y+py*nyi]
-        self._insert_RGBA_image(logo_surface,box)
+        #box = [x+px*marg_x, y+py*marg_y, x+px*marg_x+px*nxi, y+py*marg_y+py*nyi]
+        #print ("box: %s" % box)
+        self._insert_RGBA_image(logo_surface,rectangle_box) 
+        #logo_surface.surface_destroy()
         
         # update cursor
         self.style['width'] = int(logo_width)
@@ -405,7 +342,9 @@ class DecoratorCairo(DecoratorBase):
         y=self.style['cursor'][1]
         mx=self.style['margins'][0]
         my=self.style['margins'][1]
-        x_size,y_size = self.image.size
+        x_size = self.surface.get_width()
+        y_size = self.surface.get_height()
+        
 
         # horizontal/vertical?
         is_vertical = False
@@ -422,7 +361,7 @@ class DecoratorCairo(DecoratorBase):
         if self.style['alignment'][1] == 1.0:
             is_bottom = True
 
-        # adjust new size based on extend (fill space) style,
+         # adjust new size based on extend (fill space) style,
         if self.style['extend']:
             if self.style['propagation'][0] == 1:
                 self.style['width'] = (x_size - x)
@@ -443,15 +382,18 @@ class DecoratorCairo(DecoratorBase):
                 x_spacer = 40
 
         # draw object
-        draw = self._get_canvas(self.image)
+        #draw = self._get_canvas(self.image)
+        
+        
         
         # draw base
         px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
         x1 = x + px*self.style['width']
         y1 = y + py*self.style['height']
-        self._draw_rectangle(draw,[x,y,x1,y1],**self.style)
+        self._draw_rectangle(None,[x,y,x1,y1],**self.style)
 
+        
         # scale dimensions
         scale_width = self.style['width'] - 2*mx - x_spacer
         scale_height = self.style['height'] - 2*my - y_spacer
@@ -459,9 +401,11 @@ class DecoratorCairo(DecoratorBase):
         # generate color scale image obj inset by margin size mx my,
         from trollimage.image import Image as TImage
         
+        
+        
         #### THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION ####
         minval,maxval = colormap.values[0],colormap.values[-1]
-
+        
         if is_vertical:
             linedata = np.ones((scale_width,1)) * np.arange(minval,maxval,(maxval-minval)/scale_height)
             linedata = linedata.transpose()
@@ -472,16 +416,38 @@ class DecoratorCairo(DecoratorBase):
         timg.colorize(colormap)
         scale = timg.pil_image()
         ###########################################################
-
+        
+        timg.show()
+        
+        ## FIXME Koe: very unelegant solution: I'm saving a .png just to open it 
+        ## as a cairo surface. Passing from PIL image to cairo surface
+        ## (i.e. using self.pil_to_cairo()) creates a surface with the
+        ## channels inverted. The fix will probably imply switching 
+        ## channel during the conversion.
+        
+        timg.save("./temp.png", fformat='png')
+        #pil_image = timg.pil_image()
+        
+        cairo_image = cairo.ImageSurface.create_from_png("./temp.png")
+        os.remove("./temp.png")
+        self.context.set_source_surface(cairo_image)
+        self.context.paint()
+        
+        
+        
+        
+        
+        """
+        
         # finalize (must be before paste)
-        self._finalize(draw)
+        self._finalize(None)
 
         # paste scale onto image
         pos =(min(x,x1)+mx,min(y,y1)+my)
         self.image.paste(scale,pos)
 
         # reload draw object
-        draw = self._get_canvas(self.image)
+        #draw = self._get_canvas(self.image)
 
         # draw tick marks
         val_steps =  _round_arange2( minval, maxval , self.style['tick_marks'] )
@@ -491,7 +457,7 @@ class DecoratorCairo(DecoratorBase):
         form = "%"+"."+str(ffra)+"f"
         last_x = x+px*mx
         last_y = y+py*my
-        ref_w, ref_h = self._draw_text(draw, (0,0), form%(val_steps[0]), dry_run=True, **self.style)
+        ref_w, ref_h = self._draw_text(None, (0,0), form%(val_steps[0]), dry_run=True, **self.style)
 
         if is_vertical:
             # major
@@ -543,7 +509,7 @@ class DecoratorCairo(DecoratorBase):
 
         # finalize
         self._finalize(draw)
-
+        """
 #########################################
 
 
@@ -555,8 +521,68 @@ def _frange(x,y,jump):
 def frange(x,y,jump):
     return [p for p in _frange(x,y,jump) ]
 
-class ShapeFileError(Exception):
-    pass
+def  _round_arange(val_min, val_max , dval):
+    """
+    Returns an array of values in the range from valmin to valmax
+    but with stepping, dval. This is similar to numpy.arange except 
+    the values must be rounded to the nearest multiple of dval.
+    """
+    vals = np.arange(val_min, val_max, dval)
+    round_vals = vals - vals%dval
+    if round_vals[0] < val_min:
+        round_vals = round_vals[1:]
+    return round_vals
+     
+def  _round_arange2(val_min, val_max , dval):
+    """
+    Returns an array of values in the range from valmin to valmax
+    but with stepping, dval. This is similar to numpy.linspace except 
+    the values must be rounded to the nearest multiple of dval.
+    The difference to _round_arange is that the return values include 
+    also the bounary value val_max.
+    """
+    val_min_round = val_min + (dval-val_min%dval)%dval
+    val_max_round = val_max - val_max%dval
+    n_points = int((val_max_round-val_min_round)/dval)+1
+    vals = np.linspace( val_min_round, val_max_round, num=n_points)
 
+    return vals
+     
+   
+def _optimize_scale_numbers( minval, maxval, dval ):
+    """
+    find a suitable number format, A and B in "%A.Bf" and power if numbers are large
+    for display of scale numbers.
+    """
+    ffra = 1
+    # no fractions, so turn off remainder
+    if dval%1.0 == 0.0:
+        ffra=0
+        
+    return ffra,0
+    
+# def pil2cairo(im):
+    # """Transform a PIL Image into a Cairo ImageSurface."""
 
-                        
+    # assert sys.byteorder == 'little', 'We don\'t support big endian'
+    # if im.mode != 'RGBA':
+        # im = im.convert('RGBA')
+
+    # s = im.tostring('raw', 'BGRA')
+    # a = array.array('B', s)
+    # dest = cairo.ImageSurface(cairo.FORMAT_ARGB32, im.size[0], im.size[1])
+    # ctx = cairo.Context(dest)
+    # non_premult_src_wo_alpha = cairo.ImageSurface.create_for_data(
+        # a, cairo.FORMAT_RGB24, im.size[0], im.size[1])
+    # non_premult_src_alpha = cairo.ImageSurface.create_for_data(
+        # a, cairo.FORMAT_ARGB32, im.size[0], im.size[1])
+    # ctx.set_source_surface(non_premult_src_wo_alpha)
+    # ctx.mask_surface(non_premult_src_alpha)
+    # return dest
+
+def pil_to_cairo(im):
+    #im.putalpha(256) # create alpha channel
+    arr = numpy.array(im)
+    height, width, channels = arr.shape
+    surface = cairo.ImageSurface.create_for_data(arr, cairo.FORMAT_RGB24, width, height)
+    return surface
