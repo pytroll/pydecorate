@@ -29,7 +29,6 @@ font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",
 #dc.align_right()
 print rdbu.values
 print rdbu.colors
-#dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
 
 #dc.align_bottom()
 #dc.add_scale(rdbu, extend=True, tick_marks=2.0, line_opacity=100, width=60)
@@ -51,20 +50,24 @@ print rdbu.colors
 
 dc.align_top()
 dc.align_left()
-dc.add_text("TOP L \nancora TOP L")
-dc.align_left()
-dc.align_bottom()
-dc.add_text("BOT L \nancora BOT L")
-dc.align_right()
-dc.add_text("BOT R\nfraseeeeeeee luuuuunnngggghhiiiissisisma")
-dc.align_top()
-dc.add_logo("logos/vi-logo-350x350.png")
-dc.align_left()
-dc.add_logo("logos/vi-logo-350x350.png")
-dc.align_bottom()
-dc.add_logo("logos/vi-logo-350x350.png")
-dc.align_right()
-dc.add_logo("logos/vi-logo-350x350.png")
+# dc.add_text("TOP L \nancora TOP L\n...")
+# dc.write_vertically()
+# dc.add_text("sempre TOP L")
+# dc.add_text("sempre TOP L")
+# dc.add_logo("logos/vi-logo-350x350.png")
+# dc.align_bottom()
+# dc.add_logo("logos/vi-logo-350x350.png")
+# dc.add_text("BOT L \nancora BOT L")
+
+dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
+
+
+# dc.align_right()
+# dc.add_text("BOT R\nfraseaaaaaaaaaaaaaaaaaaaaa")
+# dc.add_logo("logos/vi-logo-350x350.png")
+# dc.align_top()
+# dc.add_logo("logos/vi-logo-350x350.png")
+# #dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K') 
 dc.save_png()
 
 result = Image.open('boh.png')
