@@ -3,28 +3,20 @@
 
 from PIL import Image
 from pydecorate import DecoratorCairo
-import aggdraw
-
-font=aggdraw.Font("navy","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=20)
-font_scale=aggdraw.Font("black","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=12)
 
 from trollimage.colormap import rdbu
 rdbu.colors = rdbu.colors[::-1]
 rdbu.set_range(-90, 10)
 print type(rdbu)
 
-
 img = Image.open('BMNG_clouds_201109181715_areaT2.png')
 dc = DecoratorCairo(img)
-
 
 #dc.write_vertically()
 #dc.add_logo("logos/pytroll_light_big.png")
 #dc.add_logo("logos/NASA_Logo.gif",margins=[10,10],bg='yellow')
 #dc.add_logo("logos/pytroll_light_big.png")
-font=aggdraw.Font("blue","/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf",size=16)
 #dc.add_text("Some text",font=font)
-
 
 #dc.align_right()
 print rdbu.values
@@ -62,12 +54,14 @@ dc.align_left()
 dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
 
 
-# dc.align_right()
-# dc.add_text("BOT R\nfraseaaaaaaaaaaaaaaaaaaaaa")
+dc.align_bottom()
+dc.add_text("BOT L\nfraseaaaaaaaaaaaaaaaaaaaaa")
+dc.add_text("BOT L\nfraseaaaaaaaaaaaaaaaaaaaaa")
 # dc.add_logo("logos/vi-logo-350x350.png")
 # dc.align_top()
-# dc.add_logo("logos/vi-logo-350x350.png")
 # #dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K') 
+#dc.align_right()
+dc.add_logo("logos/vi-logo-350x350.png")
 dc.save_png()
 
 result = Image.open('boh.png')
