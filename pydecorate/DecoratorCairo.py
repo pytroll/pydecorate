@@ -201,11 +201,6 @@ class DecoratorCairo(DecoratorBase):
         pos_x = x + mx
         pos_y = y + my
 
-        # if py < 0:
-            # pos_y += py*self.style['height']
-        # if px < 0:
-            # pos_x += px*self.style['width']
-
         self._draw_rectangle(None, [x, y, x1, y1], **self.style)
 
         # draw
@@ -236,7 +231,6 @@ class DecoratorCairo(DecoratorBase):
         text_extents = self.context.text_extents(txt)
         tw = text_extents[2]
         th = text_extents[3]
-        #tw, th = draw.textsize(txt, font)
         # align text position
         x, y = xy
         if align[0] == 'c':
@@ -263,15 +257,11 @@ class DecoratorCairo(DecoratorBase):
         self.context.move_to(xys[0][0], xys[0][1])
         self.context.line_to(xys[1][0], xys[1][1])
         self.context.stroke()
-        #draw.line(xys,fill=kwargs['line']) # inconvenient to use fill for a line so swapped def.
 
     def _draw_rectangle(self,draw,xys,**kwargs):
         # adjust extent of rectangle to draw up to but not including xys[2/3]
-        #xys[2]-=1
-        #xys[3]-=1
         self.context.set_source_rgba(self.style['bg'][0], self.style['bg'][0], self.style['bg'][0], self.style['bg_opacity'])
         if kwargs['bg'] or kwargs['outline']:
-            #self.context.set_line_width(1)
             self.context.rectangle(xys[0], xys[1], xys[2], xys[3])
         self.context.fill()
 
@@ -321,8 +311,6 @@ class DecoratorCairo(DecoratorBase):
             nyi = int(round(nxi*aspect))
             logo_height = (nyi + 2*marg_y)
 
-        #logo = logo.resize((nxi,nyi),resample=Image.ANTIALIAS)
-
         # draw base
         px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
@@ -330,27 +318,14 @@ class DecoratorCairo(DecoratorBase):
 
         self._draw_rectangle(None, rectangle_box, **self.style)
 
-        #box = [x, y, x+px*logo_width, y+py*logo_height]
-        #self._draw_rectangle(draw,box,**self.style)
-
-        #finalize
-        #self._finalize(draw)
-
         scale_x = nxi/logo_surface.get_width()
         scale_y = nyi/logo_surface.get_height()
         
         logo_x = x + (rectangle_box[2])/2 - nxi/2
         logo_y = y + (rectangle_box[3])/2 - nyi/2
         
-        print rectangle_box
-        print logo_x
-        print logo_y
-        
         # paste logo
-        #box = [x+px*marg_x, y+py*marg_y, x+px*marg_x+px*nxi, y+py*marg_y+py*nyi]
-        #print ("box: %s" % box)
         self._scale_and_draw_image(logo_surface, (logo_x, logo_y), (scale_x, scale_y))
-        #logo_surface.surface_destroy()
 
         # update cursor
         self.style['width'] = int(logo_width)
@@ -429,8 +404,6 @@ class DecoratorCairo(DecoratorBase):
         # draw object
         #draw = self._get_canvas(self.image)
 
-
-
         # draw base
         px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
@@ -446,8 +419,6 @@ class DecoratorCairo(DecoratorBase):
         # generate color scale image obj inset by margin size mx my,
         from trollimage.image import Image as TImage
 
-
-
         #### THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION ####
         minval,maxval = colormap.values[0],colormap.values[-1]
 
@@ -462,21 +433,17 @@ class DecoratorCairo(DecoratorBase):
         scale = timg.pil_image()
         ###########################################################
 
-        ## FIXME Koe: very unelegant solution: I'm saving a .png just to open it
-        ## as a cairo surface. Passing from PIL image to cairo surface
-        ## (i.e. using self.pil_to_cairo()) creates a surface with the
-        ## channels inverted. The fix will probably imply switching
-        ## channel during the conversion.
-
         # computing the top left corner of the scale background
         #image_corner_x = x + (x1 - scale_width)/2 
         image_corner_x = min(x,x1)+mx 
         image_corner_y = min(y,y1)+my 
         #image_corner_y = y + (y1 - scale_height)/2 
         
-        timg.save("./temp.png", fformat='png')
-        cairo_image = cairo.ImageSurface.create_from_png("./temp.png")
-        os.remove("./temp.png")
+        cairo_image = _pil_to_cairo(scale)
+        
+        # timg.save("./temp.png", fformat='png')
+        # cairo_image = cairo.ImageSurface.create_from_png("./temp.png")
+        # os.remove("./temp.png")
         #self.context.translate(x + mx, y + my)
         self.context.save()
         self.context.set_source_surface(cairo_image, image_corner_x, image_corner_y)
@@ -602,28 +569,15 @@ def _optimize_scale_numbers( minval, maxval, dval ):
 
     return ffra,0
 
-# def pil2cairo(im):
-    # """Transform a PIL Image into a Cairo ImageSurface."""
+def _pil_to_cairo(pil_img):
+    """
+    Convert PIL image to cairo surface
+    
+    """
 
-    # assert sys.byteorder == 'little', 'We don\'t support big endian'
-    # if im.mode != 'RGBA':
-        # im = im.convert('RGBA')
-
-    # s = im.tostring('raw', 'BGRA')
-    # a = array.array('B', s)
-    # dest = cairo.ImageSurface(cairo.FORMAT_ARGB32, im.size[0], im.size[1])
-    # ctx = cairo.Context(dest)
-    # non_premult_src_wo_alpha = cairo.ImageSurface.create_for_data(
-        # a, cairo.FORMAT_RGB24, im.size[0], im.size[1])
-    # non_premult_src_alpha = cairo.ImageSurface.create_for_data(
-        # a, cairo.FORMAT_ARGB32, im.size[0], im.size[1])
-    # ctx.set_source_surface(non_premult_src_wo_alpha)
-    # ctx.mask_surface(non_premult_src_alpha)
-    # return dest
-
-def pil_to_cairo(im):
-    #im.putalpha(256) # create alpha channel
-    arr = numpy.array(im)
-    height, width, channels = arr.shape
-    surface = cairo.ImageSurface.create_for_data(arr, cairo.FORMAT_RGB24, width, height)
+    img_rgba = pil_img.convert('RGBA')
+    data = np.array(img_rgba.tobytes('raw', 'BGRA'))
+    width, height = img_rgba.size
+    surface = cairo.ImageSurface.create_for_data(data, cairo.FORMAT_ARGB32,
+                                           width, height)
     return surface
