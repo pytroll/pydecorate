@@ -9,8 +9,9 @@ rdbu.colors = rdbu.colors[::-1]
 rdbu.set_range(-90, 10)
 print type(rdbu)
 
-img = Image.open('BMNG_clouds_201109181715_areaT2.png')
-dc = DecoratorCairo(img)
+# img = Image.open()
+
+dc = DecoratorCairo('20160902_140512.png')
 
 #dc.write_vertically()
 #dc.add_logo("logos/pytroll_light_big.png")
@@ -43,7 +44,6 @@ print rdbu.colors
 dc.align_top()
 dc.align_left()
 # dc.add_text("TOP L \nancora TOP L\n...")
-# dc.write_vertically()
 # dc.add_text("sempre TOP L")
 # dc.add_text("sempre TOP L")
 # dc.add_logo("logos/vi-logo-350x350.png")
@@ -51,18 +51,24 @@ dc.align_left()
 # dc.add_logo("logos/vi-logo-350x350.png")
 # dc.add_text("BOT L \nancora BOT L")
 
+dc.write_vertically()
 dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
 
 
 dc.align_bottom()
-dc.add_text("BOT L\nfraseaaaaaaaaaaaaaaaaaaaaa")
-dc.add_text("BOT L\nfraseaaaaaaaaaaaaaaaaaaaaa")
+# dc.add_text("BOT L\nfraseaaaaaaaaaaaaaaaaaaaaa")
+# dc.add_text("BOT L\nfraseaaaaaaaaaaaaaaaaaaaaa")
 # dc.add_logo("logos/vi-logo-350x350.png")
 # dc.align_top()
 # #dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K') 
-#dc.align_right()
-dc.add_logo("logos/vi-logo-350x350.png")
+#dc.add_logo("logos/vi-logo-350x350.png")
+# dc.add_logo("logos/vi-logo-350x350.png")
+dc.align_right()
+dc.align_bottom()
+dc.add_logo("logos/pytroll_light_big.png")
+dc.add_logo("logos/pytroll_light_big.png")
 dc.save_png()
+
 
 result = Image.open('boh.png')
 result.show()
