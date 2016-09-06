@@ -16,6 +16,7 @@
 #You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import division
 from pydecorate.DecoratorBase import DecoratorBase
 
 import numpy as np
@@ -35,6 +36,7 @@ try:
 except ImportError:
     print "ImportError: Missing module: ImageDraw"
 
+
 import numpy
 import os
 
@@ -48,7 +50,7 @@ class DecoratorCairo(DecoratorBase):
     """
 
     def __init__(self, image):
-        self.surface = cairo.ImageSurface.create_from_png('BMNG_clouds_201109181715_areaT2.png')
+        self.surface = cairo.ImageSurface.create_from_png(image)
         self.context = cairo.Context(self.surface)
         super(DecoratorCairo, self).__init__(image)
         print("surface size: %s x %s" % (self.surface.get_width(), self.surface.get_height()))
@@ -57,7 +59,7 @@ class DecoratorCairo(DecoratorBase):
         self.style['bg'] = (255,255,255)
         self.style['bg_opacity'] = 0.5
         self.style['line'] = (0, 0, 0)
-        self.style['line_opacity'] = 1107
+        self.style['line_opacity'] = 1
 
 
     def write_vertically(self):
@@ -129,7 +131,8 @@ class DecoratorCairo(DecoratorBase):
         self.style['cursor'] = list(self.style['cursor'])
 
     def home(self):
-        super(DecoratorCairo, self).home()
+        self.style['cursor'][0] = int(self.style['alignment'][0] * self.surface.get_width())
+        self.style['cursor'][1] = int(self.style['alignment'][1] * self.surface.get_height())
 
     def rewind(self):
         super(DecoratorCairo, self).rewind()
@@ -203,10 +206,7 @@ class DecoratorCairo(DecoratorBase):
         # if px < 0:
             # pos_x += px*self.style['width']
 
-        print("text: x=%s, y=%s, x1=%s, y1=%s" % (x,y,x1,y1))
         self._draw_rectangle(None, [x, y, x1, y1], **self.style)
-
-
 
         # draw
         for i in range(len(txt_nl)):
@@ -259,6 +259,7 @@ class DecoratorCairo(DecoratorBase):
 
     def _draw_line(self,draw,xys,**kwargs):
         self.context.set_line_width(self.style['line_width'])
+        self.context.set_source_rgb(self.style['line'][0], self.style['line'][1], self.style['line'][2])
         self.context.move_to(xys[0][0], xys[0][1])
         self.context.line_to(xys[1][0], xys[1][1])
         self.context.stroke()
@@ -277,7 +278,7 @@ class DecoratorCairo(DecoratorBase):
 
     def _insert_RGBA_image(self,img,box):
         # make sure box is formed tl to br corners:
-
+    
         ## FIXME Koe: scaling need to be implemented, possibily without changing
         ## the method signature
 
@@ -327,12 +328,7 @@ class DecoratorCairo(DecoratorBase):
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
         rectangle_box = [x, y, px*logo_width, py*logo_height]
 
-        print("logo: x=%s, y=%s, x1=%s, y1=%s" % (x,y,px*logo_width,py*logo_height))
-
-
         self._draw_rectangle(None, rectangle_box, **self.style)
-
-
 
         #box = [x, y, x+px*logo_width, y+py*logo_height]
         #self._draw_rectangle(draw,box,**self.style)
@@ -340,18 +336,38 @@ class DecoratorCairo(DecoratorBase):
         #finalize
         #self._finalize(draw)
 
+        scale_x = nxi/logo_surface.get_width()
+        scale_y = nyi/logo_surface.get_height()
+        
+        logo_x = x + (rectangle_box[2])/2 - nxi/2
+        logo_y = y + (rectangle_box[3])/2 - nyi/2
+        
+        print rectangle_box
+        print logo_x
+        print logo_y
+        
         # paste logo
         #box = [x+px*marg_x, y+py*marg_y, x+px*marg_x+px*nxi, y+py*marg_y+py*nyi]
         #print ("box: %s" % box)
-        self._insert_RGBA_image(logo_surface,rectangle_box)
+        self._scale_and_draw_image(logo_surface, (logo_x, logo_y), (scale_x, scale_y))
         #logo_surface.surface_destroy()
 
         # update cursor
         self.style['width'] = int(logo_width)
         self.style['height'] = int(logo_height)
         self._step_cursor()
-
-
+        
+    def _scale_and_draw_image(self, surface, xy, scale):
+        
+        # make sure xy is formed tl to br corners:
+    
+        print scale
+        self.context.save()
+        self.context.scale(scale[0],scale[1])
+        self.context.set_source_surface(surface, xy[0]/scale[0], xy[1]/scale[1])
+        self.context.paint()
+        self.context.restore()
+        
     def _form_xy_box(self,box):
         newbox = box + []
         if box[0] > box[2]:
@@ -462,9 +478,10 @@ class DecoratorCairo(DecoratorBase):
         cairo_image = cairo.ImageSurface.create_from_png("./temp.png")
         os.remove("./temp.png")
         #self.context.translate(x + mx, y + my)
+        self.context.save()
         self.context.set_source_surface(cairo_image, image_corner_x, image_corner_y)
         self.context.paint()
-
+        self.context.restore()
         
         # draw tick marks
         val_steps =  _round_arange2( minval, maxval , self.style['tick_marks'] )
@@ -486,7 +503,7 @@ class DecoratorCairo(DecoratorBase):
             y_steps = py*(val_steps - minval - offset_start - offset_end)*scale_height/(maxval-minval)+y+py*my
             y_steps = y_steps[::-1]
             for i, ys in enumerate(y_steps):
-                self._draw_line(draw,[(x+px*mx,ys),(x+px*(mx+scale_width/3.0),ys)],**self.style)
+                self._draw_line(None,[(x+px*mx,ys),(x+px*(mx+scale_width/3.0),ys)],**self.style)
                 if abs(ys-last_y)>ref_height:
                     self._draw_text(None,(x+px*(mx+2*scale_width/3.0),ys), (form%(val_steps[i])).strip(), **self.style)
                     last_y = ys
@@ -499,15 +516,18 @@ class DecoratorCairo(DecoratorBase):
             # major
             x_steps = px*(val_steps - minval)*scale_width/(maxval-minval)+x+px*mx
             for i, xs in enumerate(x_steps):
-                self._draw_line(None,[(xs,y+py*my),(xs,y+py*(my+scale_height/3.0))],**self.style)
+                x_start = (xs,y+py*my)
+                x_end = (xs,y+py*(my+scale_height/3.0))
+                self._draw_line(None,[x_start,x_end],**self.style)
                 if abs(xs-last_x)>ref_width:
                     self._draw_text(None,(xs, y+py*(my+2*scale_height/2)), (form%(val_steps[i])).strip(), **self.style)
                     last_x = xs
             # minor
             x_steps = px*(minor_steps - minval)*scale_width/(maxval-minval)+x+px*mx
             for i, xs in enumerate(x_steps):
-                self._draw_line(None,[(xs,y+py*my),(xs,y+py*(my+scale_height/6.0))],**self.style)
-
+                x_start = (xs,y+py*my)
+                x_end = (xs,y+py*(my+scale_height/6.0))
+                self._draw_line(None,[x_start, x_end],**self.style)
       
 
         # draw unit and/or power if set
