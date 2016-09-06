@@ -101,9 +101,9 @@ class DecoratorCairo(DecoratorBase):
         # This can be reverted if needed.
         raise NotImplementedError("not implemented yet")
 
-    def save_png(self):
+    def save_png(self, path):
         ## FIXME Koe: testing path and name, NEEDS to be changed
-        self.surface.write_to_png("boh.png")
+        self.surface.write_to_png(path)
         self.surface.finish()
 
     def _finalize(self, draw):
@@ -216,14 +216,12 @@ class DecoratorCairo(DecoratorBase):
         # update cursor
         self._step_cursor()
 
-        # finalize
-        self._finalize(None)
-
     def _draw_text(self, draw, xy, txt, font, fill='black', align='cc', dry_run=False, **kwargs):
         """
         Elementary text draw routine,
         with alignment. Returns text size.
         """
+        
         # check for font object
         if font is None:
             font = self._load_default_font()
@@ -269,12 +267,10 @@ class DecoratorCairo(DecoratorBase):
     def _insert_RGBA_image(self,img,box):
         # make sure box is formed tl to br corners:
     
-        ## FIXME Koe: scaling need to be implemented, possibily without changing
-        ## the method signature
-
+        ## Koe: does not use a "box" anymore, the image has to be already scaled
+        
         self.context.save()
-        self.context.scale(0.1,0.1)
-        self.context.set_source_surface(img, (box[0] + abs(box[2])/4)*10, (box[1] + (box[3])/4)*10)
+        self.context.set_source_surface(img, box[0], box[1])
         self.context.paint()
         self.context.restore()
 
@@ -336,7 +332,6 @@ class DecoratorCairo(DecoratorBase):
         
         # make sure xy is formed tl to br corners:
     
-        print scale
         self.context.save()
         self.context.scale(scale[0],scale[1])
         self.context.set_source_surface(surface, xy[0]/scale[0], xy[1]/scale[1])
@@ -381,7 +376,7 @@ class DecoratorCairo(DecoratorBase):
         if self.style['alignment'][1] == 1.0:
             is_bottom = True
 
-         # adjust new size based on extend (fill space) style,
+        # adjust new size based on extend (fill space) style,
         if self.style['extend']:
             if self.style['propagation'][0] == 1:
                 self.style['width'] = (x_size - x)
@@ -401,16 +396,12 @@ class DecoratorCairo(DecoratorBase):
             else:
                 x_spacer = 40
 
-        # draw object
-        #draw = self._get_canvas(self.image)
-
         # draw base
         px = (self.style['propagation'][0] + self.style['newline_propagation'][0])
         py = (self.style['propagation'][1] + self.style['newline_propagation'][1])
         x1 = x + px*self.style['width']
         y1 = y + py*self.style['height']
         self._draw_rectangle(None,[x,y,x1,y1],**self.style)
-
 
         # scale dimensions
         scale_width = self.style['width'] - 2*mx - x_spacer
@@ -434,17 +425,11 @@ class DecoratorCairo(DecoratorBase):
         ###########################################################
 
         # computing the top left corner of the scale background
-        #image_corner_x = x + (x1 - scale_width)/2 
         image_corner_x = min(x,x1)+mx 
         image_corner_y = min(y,y1)+my 
-        #image_corner_y = y + (y1 - scale_height)/2 
         
         cairo_image = _pil_to_cairo(scale)
         
-        # timg.save("./temp.png", fformat='png')
-        # cairo_image = cairo.ImageSurface.create_from_png("./temp.png")
-        # os.remove("./temp.png")
-        #self.context.translate(x + mx, y + my)
         self.context.save()
         self.context.set_source_surface(cairo_image, image_corner_x, image_corner_y)
         self.context.paint()
@@ -461,7 +446,6 @@ class DecoratorCairo(DecoratorBase):
         text_extents = self.context.text_extents(form%(val_steps[0]))
         ref_width = text_extents[2]
         ref_height = text_extents[3]
-        #ref_w, ref_h = self._draw_text(None, (0,0), form%(val_steps[0]), dry_run=True, **self.style)
 
         if is_vertical:
             # major
@@ -472,7 +456,7 @@ class DecoratorCairo(DecoratorBase):
             for i, ys in enumerate(y_steps):
                 self._draw_line(None,[(x+px*mx,ys),(x+px*(mx+scale_width/3.0),ys)],**self.style)
                 if abs(ys-last_y)>ref_height:
-                    self._draw_text(None,(x+px*(mx+2*scale_width/3.0),ys), (form%(val_steps[i])).strip(), **self.style)
+                    self._draw_text(None,(x+px*(mx + scale_width),ys + ref_height), (form%(val_steps[i])).strip(), **self.style)
                     last_y = ys
             # minor
             y_steps = py*(minor_steps - minval)*scale_height/(maxval-minval)+y+py*my
