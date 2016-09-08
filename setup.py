@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2013 Adam Dybbroe
+# Copyright (c) 2013, 2016 Adam Dybbroe
 
 # Author(s):
 
@@ -46,20 +46,20 @@ setup(name='pydecorate',
                    "Programming Language :: Python",
                    "Topic :: Scientific/Engineering"],
       url="http://code.google.com/p/pydecorate/",
-      #download_url="..."
+      # download_url="..."
       long_description=long_description,
       license='GPLv3',
 
-      packages = ['pydecorate'],
+      packages=['pydecorate'],
 
       # Project should use reStructuredText, so ensure that the docutils get
       # installed or upgraded on the target machine
-      install_requires=['docutils>=0.3', 
-                        'PIL'],
-      scripts = [],      
-      data_files = [],
+      install_requires=['docutils>=0.3',
+                        'pillow'],
+      scripts=[],
+      data_files=[],
       test_suite="nose.collector",
       tests_require=[],
 
-      zip_safe = False
+      zip_safe=False
       )
