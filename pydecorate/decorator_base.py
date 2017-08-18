@@ -21,12 +21,12 @@ import numpy as np
 try:
     from PIL import Image, ImageFont
 except ImportError:
-    print "ImportError: Missing PIL image objects"
+    print("ImportError: Missing PIL image objects")
 
 try:
     from PIL import ImageDraw
 except ImportError:
-    print "ImportError: Missing module: ImageDraw"
+    print("ImportError: Missing module: ImageDraw")
 
 # style dictionary defines default options
 # some only used by aggdraw version of the decorator
@@ -547,7 +547,7 @@ class DecoratorBase(object):
 def _round_arange(val_min, val_max, dval):
     """
     Returns an array of values in the range from valmin to valmax
-    but with stepping, dval. This is similar to numpy.arange except 
+    but with stepping, dval. This is similar to numpy.arange except
     the values must be rounded to the nearest multiple of dval.
     """
     vals = np.arange(val_min, val_max, dval)
@@ -560,9 +560,9 @@ def _round_arange(val_min, val_max, dval):
 def _round_arange2(val_min, val_max, dval):
     """
     Returns an array of values in the range from valmin to valmax
-    but with stepping, dval. This is similar to numpy.linspace except 
+    but with stepping, dval. This is similar to numpy.linspace except
     the values must be rounded to the nearest multiple of dval.
-    The difference to _round_arange is that the return values include 
+    The difference to _round_arange is that the return values include
     also the bounary value val_max.
     """
     val_min_round = val_min + (dval - val_min % dval) % dval
