@@ -87,3 +87,5 @@
 /pydecorate_old/colormap/__init__.pyc
 /pydecorate_old/__init__.py~
 /pydecorate_old/__init__.pyc
+/build
+/dist
