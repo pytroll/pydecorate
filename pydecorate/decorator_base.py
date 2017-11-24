@@ -322,6 +322,18 @@ class DecoratorBase(object):
         # synchronize kwargs into style
         self.set_style(**kwargs)
 
+        if 'align' in self.style:
+            if 'top_bottom' in self.style['align']:
+                if self.style['align']['top_bottom'] == 'top':
+                    self.align_top()
+                elif self.style['align']['top_bottom'] == 'bottom':
+                    self.align_bottom()
+            if 'left_right' in self.style['align']:
+                if self.style['align']['left_right'] == 'left':
+                    self.align_left()
+                elif self.style['align']['left_right'] == 'right':
+                    self.align_right()
+
         # current xy and margins
         x = self.style['cursor'][0]
         y = self.style['cursor'][1]
