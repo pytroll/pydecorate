@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2013, 2016 Adam Dybbroe
+# Copyright (c) 2013, 2016, 2018 Adam Dybbroe
 
 # Author(s):
 
@@ -29,12 +29,24 @@ except IOError:
 
 
 from setuptools import setup
-import imp
+import sys
 
-version = imp.load_source('pydecorate.version', 'pydecorate/version.py')
+
+def get_version():
+    if sys.version_info >= (3, 5):
+        import importlib
+        spec = importlib.util.spec_from_file_location('version', 'pydecorate/version.py')
+        version = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(version)
+    else:
+        # python 2.7 doesn't have the `importlib.util` package
+        # python 3.4 doesn't have the `module_from_spec` method
+        import imp
+        version = imp.load_source('pydecorate.version', 'pydecorate/version.py')
+    return version.__version__
 
 setup(name='pydecorate',
-      version="v0.1.0",
+      version=get_version(),
       description='Decorating PIL images: logos, texts, pallettes',
       author='Hrobjartur Thorsteinsson',
       author_email='thorsteinssonh@gmail.com',
