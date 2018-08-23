@@ -51,6 +51,8 @@ setup(name='pydecorate',
       license='GPLv3',
 
       packages=['pydecorate'],
+      include_package_data=True,
+      package_data={'pydecorate': ['fonts/*.ttf']},
 
       # Project should use reStructuredText, so ensure that the docutils get
       # installed or upgraded on the target machine
