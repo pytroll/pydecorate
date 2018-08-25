@@ -34,7 +34,7 @@ import imp
 version = imp.load_source('pydecorate.version', 'pydecorate/version.py')
 
 setup(name='pydecorate',
-      version="v0.1.0",
+      version=version.__version__,
       description='Decorating PIL images: logos, texts, pallettes',
       author='Hrobjartur Thorsteinsson',
       author_email='thorsteinssonh@gmail.com',
@@ -60,7 +60,7 @@ setup(name='pydecorate',
                         'pillow'],
       scripts=[],
       data_files=[],
-      test_suite="nose.collector",
+      # test_suite="nose.collector",
       tests_require=[],
 
       zip_safe=False
