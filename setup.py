@@ -60,8 +60,9 @@ setup(name='pydecorate',
                         'pillow'],
       scripts=[],
       data_files=[],
-      # test_suite="nose.collector",
-      tests_require=[],
+      # test_suite="",
+      tests_require=['pytest', 'mock'],
+      python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
 
       zip_safe=False
       )
