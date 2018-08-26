@@ -34,7 +34,7 @@ import imp
 version = imp.load_source('pydecorate.version', 'pydecorate/version.py')
 
 setup(name='pydecorate',
-      version="v0.1.0",
+      version=version.__version__,
       description='Decorating PIL images: logos, texts, pallettes',
       author='Hrobjartur Thorsteinsson',
       author_email='thorsteinssonh@gmail.com',
@@ -56,12 +56,12 @@ setup(name='pydecorate',
 
       # Project should use reStructuredText, so ensure that the docutils get
       # installed or upgraded on the target machine
-      install_requires=['docutils>=0.3',
-                        'pillow'],
+      install_requires=['pillow', 'aggdraw'],
       scripts=[],
       data_files=[],
-      test_suite="nose.collector",
-      tests_require=[],
+      # test_suite="",
+      tests_require=['pytest', 'mock'],
+      python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
 
       zip_safe=False
       )
