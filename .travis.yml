@@ -1,15 +1,15 @@
 language: python
 env:
-    global:
-        # Set defaults to avoid repeating in most cases
-        - NUMPY_VERSION=stable
-        - MAIN_CMD='python setup.py'
-        - CONDA_DEPENDENCIES='sphinx pillow coveralls coverage codecov mock trollimage aggdraw pytest pytest-cov'
-        - PIP_DEPENDENCIES=''
-        - SETUP_XVFB=False
-        - EVENT_TYPE='push pull_request'
-        - SETUP_CMD='test'
-        - CONDA_CHANNELS='conda-forge'
+  global:
+  - NUMPY_VERSION=stable
+  - MAIN_CMD='python setup.py'
+  - CONDA_DEPENDENCIES='sphinx pillow coveralls coverage codecov mock trollimage aggdraw
+    pytest pytest-cov'
+  - PIP_DEPENDENCIES=''
+  - SETUP_XVFB=False
+  - EVENT_TYPE='push pull_request'
+  - SETUP_CMD='test'
+  - CONDA_CHANNELS='conda-forge'
 matrix:
   include:
   - env: PYTHON_VERSION=2.7
@@ -25,11 +25,11 @@ matrix:
     os: osx
     language: generic
 install:
-    - git clone --depth 1 git://github.com/astropy/ci-helpers.git
-    - source ci-helpers/travis/setup_conda.sh
-    # See https://github.com/conda/conda/issues/7626#issuecomment-412922028
-    - conda config --remove channels defaults
-    - conda install -y $CONDA_DEPENDENCIES
+- git clone --depth 1 git://github.com/astropy/ci-helpers.git
+- source ci-helpers/travis/setup_conda.sh
+# See https://github.com/conda/conda/issues/7626#issuecomment-412922028
+- conda config --remove channels defaults
+- conda install -y $CONDA_DEPENDENCIES
 script:
 - pytest --cov=pydecorate test.py
 after_success:
@@ -38,7 +38,7 @@ deploy:
   - provider: pypi
     user: dhoese
     password:
-      secure: nQlNeP9xOs8E5J1HBNCH4rIBpzrG9IlV/ucHhJGb8kFzNd3sGTho/sO5BrF6540Sf2Nvtk73y2phq+5YuHTz6PKgdoklAyTCI4LljLxtohwHztgL1ofz2EJJ48c109iIRoEQoNi4DIhkcobtOITLsg+zEa8JpCEUNd7abx/4uBE=
+      secure: PoMrJlgTJRzDvqDRs5H/k/1nkqada+zfiUTUXZEvulebkAVCu3Sj945fNQVsgq3Ha0hlyttuNGyJbLf8KUZIX9y9OJr3TuP253hQx+Ghe6scH5SFHrSj6s4ROinc9HeZfwzGlObZoeV042aSgf77O/ocGUiA54f2ZLYa8U15w9A=
     distributions: sdist
     skip_existing: true
     on:
