@@ -49,6 +49,7 @@ default_style_dict = {
     'fill': 'black',
     'fill_opacity': 255,
     'font': None,
+    'font_size': 16,
     'start_border': [0, 0],
     'extend': False,
     'tick_marks': 1.0,
@@ -225,16 +226,35 @@ class DecoratorBase(object):
 
         return tw, th
 
+    def _check_align(self):
+        if 'align' in self.style:
+            if 'top_bottom' in self.style['align']:
+                if self.style['align']['top_bottom'] == 'top':
+                    self.align_top()
+                elif self.style['align']['top_bottom'] == 'bottom':
+                    self.align_bottom()
+            if 'left_right' in self.style['align']:
+                if self.style['align']['left_right'] == 'left':
+                    self.align_left()
+                elif self.style['align']['left_right'] == 'right':
+                    self.align_right()
+
+    def _get_current_font(self):
+        if self.style['font'] is None:
+            self.style['font'] = self._load_default_font()
+        else:
+            self.style['font'] = self._load_font()
+
     def _add_text(self, txt, **kwargs):
         # synchronize kwargs into style
         self.set_style(**kwargs)
+        self._check_align()
 
         # draw object
         draw = self._get_canvas(self.image)
 
         # check for font object
-        if self.style['font'] is None:
-            self.style['font'] = self._load_default_font()
+        self._get_current_font()
 
         # image size
         x_size, y_size = self.image.size
@@ -306,6 +326,7 @@ class DecoratorBase(object):
     def _add_logo(self, logo_path, **kwargs):
         # synchronize kwargs into style
         self.set_style(**kwargs)
+        self._check_align()
 
         # current xy and margins
         x = self.style['cursor'][0]

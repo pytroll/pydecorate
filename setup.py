@@ -45,15 +45,12 @@ setup(name='pydecorate',
                    "Operating System :: OS Independent",
                    "Programming Language :: Python",
                    "Topic :: Scientific/Engineering"],
-      url="http://code.google.com/p/pydecorate/",
-      # download_url="..."
+      url="https://github.com/pytroll/pydecorate",
       long_description=long_description,
       license='GPLv3',
-
       packages=['pydecorate'],
       include_package_data=True,
       package_data={'pydecorate': ['fonts/*.ttf']},
-
       # Project should use reStructuredText, so ensure that the docutils get
       # installed or upgraded on the target machine
       install_requires=['pillow', 'aggdraw'],
@@ -62,6 +59,4 @@ setup(name='pydecorate',
       # test_suite="",
       tests_require=['pytest', 'mock'],
       python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
-
-      zip_safe=False
-      )
+      zip_safe=False)

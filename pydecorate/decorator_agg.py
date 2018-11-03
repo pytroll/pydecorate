@@ -34,6 +34,13 @@ class DecoratorAGG(DecoratorBase):
         font_path = resource_filename('pydecorate.fonts', 'DejaVuSerif.ttf')
         return aggdraw.Font('black', font_path, size=16)
 
+    def _load_font(self):
+        import aggdraw
+        try:
+            return aggdraw.Font(self.style['line'], self.style['font'], self.style['font_size'])
+        except IOError:
+            raise
+
     def add_text(self, txt, **kwargs):
         self._add_text(txt, **kwargs)
 
