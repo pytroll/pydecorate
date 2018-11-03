@@ -38,8 +38,8 @@ deploy:
   - provider: pypi
     user: dhoese
     password:
-      secure: "hYugDMS/dTyWhwg1Oq11yWnsuCmdq09gcsRBf7wJUZUbyookqr6A9fsrOdB6h5+fHeP7VVp4H9mZJnv4cJTsZ1uUz4Yw3h1iKeKVCfdsQnzbu8Sq1X/TxqVwMQ9mrTshUlUwbjs+r9SNfmg9lddXjHgJEq4Qxrx8yeNhb/B13Zs="
-    distributions: sdist bdist_wheel
+      secure: nQlNeP9xOs8E5J1HBNCH4rIBpzrG9IlV/ucHhJGb8kFzNd3sGTho/sO5BrF6540Sf2Nvtk73y2phq+5YuHTz6PKgdoklAyTCI4LljLxtohwHztgL1ofz2EJJ48c109iIRoEQoNi4DIhkcobtOITLsg+zEa8JpCEUNd7abx/4uBE=
+    distributions: sdist
     skip_existing: true
     on:
       tags: true
