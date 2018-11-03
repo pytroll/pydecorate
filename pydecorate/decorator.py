@@ -21,6 +21,8 @@ try:
 except ImportError:
     print("ImportError: Missing module: ImageDraw")
 
+from .decorator_base import DecoratorBase
+
 
 class Decorator(DecoratorBase):
 

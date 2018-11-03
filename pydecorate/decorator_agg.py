@@ -30,10 +30,9 @@ class DecoratorAGG(DecoratorBase):
 
     def _load_default_font(self):
         import aggdraw
-        try:
-            return aggdraw.Font("black", "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf", size=16)
-        except IOError:
-            return aggdraw.Font("black", "/usr/share/fonts/dejavu/DejaVuSerif.ttf", size=16)
+        from pkg_resources import resource_filename
+        font_path = resource_filename('pydecorate.fonts', 'DejaVuSerif.ttf')
+        return aggdraw.Font('black', font_path, size=16)
 
     def _load_font(self):
         import aggdraw

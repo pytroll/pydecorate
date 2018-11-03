@@ -1,91 +1,67 @@
-/doc/build/html/_images/style_retention.png
-/doc/build/html/_images/logo_and_scale1.png
-/doc/build/html/_images/logo_and_scale2.png
-/doc/build/html/_images/logo_and_scale3.png
-/trollimage
-/pydecorate_old/#__init__.py#
-/pydecorate_old/.#__init__.py
-/pydecorate/Decorator.py~
-/doc/build/html/_images/alignment_image1.png
-/doc/build/html/_images/alignment_image2.png
-/doc/build/html/_images/alignment_image3.png
-/doc/build/html/_images/alignment_image4.png
-/pydecorate/DecoratorAGG.pyc
-/pydecorate/DecoratorAGG.py~
-/pydecorate/DecoratorBase.pyc
-/pydecorate/DecoratorBase.py~
-/doc/build/html/_images/text_and_logo_image.png
-/doc/build/latex/Makefile
-/doc/build/latex/Pydecorate.log
-/doc/build/latex/Pydecorate.tex
-/doc/build/latex/fncychap.sty
-/doc/build/latex/logo_image.png
-/doc/build/latex/missfont.log
-/doc/build/latex/python.ist
-/doc/build/latex/sphinx.sty
-/doc/build/latex/sphinxhowto.cls
-/doc/build/latex/sphinxmanual.cls
-/doc/build/latex/tabulary.sty
-/doc/build/latex/text_and_logo_image.png
-/doc/source/.#installation.rst
-/doc/source/#installation.rst#
-/doc/build/html/py-modindex.html
-/doc/build/html/api.html
-/doc/build/html/_sources/api.txt
-/doc/build/doctrees/api.doctree
-/pydecorate_old/colormap/#__init__.py#
-/pydecorate/version.pyc
-/pydecorate.egg-info/PKG-INFO
-/pydecorate.egg-info/SOURCES.txt
-/pydecorate.egg-info/dependency_links.txt
-/pydecorate.egg-info/not-zip-safe
-/pydecorate.egg-info/requires.txt
-/pydecorate.egg-info/top_level.txt
-/doc/source/index.rst~
-/doc/build/html/index.html
-/doc/build/html/installation.html
-/doc/build/html/objects.inv
-/doc/build/html/search.html
-/doc/build/html/searchindex.js
-/doc/build/html/usage.html
-/doc/build/html/_images/logo_image.png
-/doc/build/html/_sources/index.txt
-/doc/build/html/_sources/installation.txt
-/doc/build/html/_sources/usage.txt
-/doc/build/html/_static/ajax-loader.gif
-/doc/build/html/_static/basic.css
-/doc/build/html/_static/comment-bright.png
-/doc/build/html/_static/comment-close.png
-/doc/build/html/_static/comment.png
-/doc/build/html/_static/default.css
-/doc/build/html/_static/doctools.js
-/doc/build/html/_static/down-pressed.png
-/doc/build/html/_static/down.png
-/doc/build/html/_static/file.png
-/doc/build/html/_static/jquery.js
-/doc/build/html/_static/minus.png
-/doc/build/html/_static/plus.png
-/doc/build/html/_static/pygments.css
-/doc/build/html/_static/searchtools.js
-/doc/build/html/_static/sidebar.js
-/doc/build/html/_static/underscore.js
-/doc/build/html/_static/up-pressed.png
-/doc/build/html/_static/up.png
-/doc/build/html/_static/websupport.js
-/doc/build/html/genindex.html
-/build/lib.linux-x86_64-2.7/pydecorate/__init__.py
-/build/lib.linux-x86_64-2.7/pydecorate/version.py
-/dist/pydecorate-v0.1.0-py2.7.egg
-/doc/build/doctrees/environment.pickle
-/doc/build/doctrees/index.doctree
-/doc/build/doctrees/installation.doctree
-/doc/build/doctrees/usage.doctree
-/doc/build/html/.buildinfo
-/test.py~
-/pydecorate/__init__.py~
-/pydecorate/__init__.pyc
-/pydecorate_old/colormap/__init__.pyc
-/pydecorate_old/__init__.py~
-/pydecorate_old/__init__.pyc
-/build
-/dist
+### PYTHON IGNORES ###
+*.py[cod]
+__pycache__/
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+doc/build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+#Translations
+*.mo
+
+#Mr Developer
+.mr.developer.cfg
+
+### C IGNORES ###
+# Object files
+*.o
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Others
+*~
+# PyCharm Settings
+.idea
+
+# VSCode Settings
+.vscode
+
+# vi / vim swp files
+*.swp
+

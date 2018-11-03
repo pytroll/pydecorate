@@ -388,7 +388,7 @@ class DecoratorBase(object):
         self.style['height'] = int(ny)
         self._step_cursor()
 
-    def _add_scale(self, colormap, **kwargs):
+    def _add_scale(self, colormap, title=None, **kwargs):
         # synchronize kwargs into style
         self.set_style(**kwargs)
 
@@ -455,14 +455,14 @@ class DecoratorBase(object):
 
         #### THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION ####
         minval, maxval = colormap.values[0], colormap.values[-1]
-
+        
         if is_vertical:
             linedata = np.ones(
-                (scale_width, 1)) * np.arange(minval, maxval, (maxval - minval) / scale_height)
+                (scale_width, 1)) * np.arange(minval, maxval, float(maxval - minval) / scale_height)
             linedata = linedata.transpose()
         else:
             linedata = np.ones(
-                (scale_height, 1)) * np.arange(minval, maxval, (maxval - minval) / scale_width)
+                (scale_height, 1)) * np.arange(minval, maxval, float(maxval - minval) / scale_width)
 
         timg = TImage(linedata, mode="L")
         timg.colorize(colormap)
@@ -536,18 +536,36 @@ class DecoratorBase(object):
             # calculate position
             if is_vertical:
                 if is_right:
-                    x = x - mx - scale_width / 2.0
+                    x_ = x - mx - scale_width / 2.0
                 else:
-                    x = x + mx + scale_width / 2.0
-                y = y + my + scale_height + y_spacer / 2.0
+                    x_ = x + mx + scale_width / 2.0
+                y_ = y + my + scale_height + y_spacer / 2.0
             else:
-                x = x + mx + scale_width + x_spacer / 2.0
+                x_ = x + mx + scale_width + x_spacer / 2.0
                 if is_bottom:
-                    y = y - my - scale_height / 2.0
+                    y_ = y - my - scale_height / 2.0
                 else:
-                    y = y + my + scale_height / 2.0
+                    y_ = y + my + scale_height / 2.0
             # draw marking
-            self._draw_text(draw, (x, y), self.style['unit'], **self.style)
+            self._draw_text(draw, (x_, y_), self.style['unit'], **self.style)
+
+        if title:
+            # calculate position
+            tw, th = draw.textsize(title, self.style['font'])
+            if is_vertical:
+                # TODO: Rotate the text?
+                if is_right:
+                    x = x - mx - scale_width - tw
+                else:
+                    x = x + mx + scale_width + tw
+                y = y + my + scale_height / 2.0
+            else:
+                x = x + mx + scale_width / 2.0
+                if is_bottom:
+                    y = y - my - scale_height - th
+                else:
+                    y = y + my + scale_height + th
+            self._draw_text(draw, (x, y), title, **self.style)
 
         # finalize
         self._finalize(draw)

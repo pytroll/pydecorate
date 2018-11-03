@@ -1,2 +1,4 @@
-#include etc/*
-
+recursive-include docs/source *
+include docs/Makefile
+recursive-include pydecorate/fonts *
+include LICENSE.txt
