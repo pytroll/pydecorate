@@ -428,14 +428,14 @@ class DecoratorBase(object):
 
         #### THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION ####
         minval, maxval = colormap.values[0], colormap.values[-1]
-
+        
         if is_vertical:
             linedata = np.ones(
-                (scale_width, 1)) * np.arange(minval, maxval, (maxval - minval) / scale_height)
+                (scale_width, 1)) * np.arange(minval, maxval, float(maxval - minval) / scale_height)
             linedata = linedata.transpose()
         else:
             linedata = np.ones(
-                (scale_height, 1)) * np.arange(minval, maxval, (maxval - minval) / scale_width)
+                (scale_height, 1)) * np.arange(minval, maxval, float(maxval - minval) / scale_width)
 
         timg = TImage(linedata, mode="L")
         timg.colorize(colormap)
