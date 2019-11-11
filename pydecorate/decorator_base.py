@@ -544,6 +544,9 @@ class DecoratorBase(object):
             self._draw_text(draw, (x_, y_), self.style['unit'], **self.style)
 
         if title:
+            # check for font object
+            self._get_current_font()
+
             # calculate position
             tw, th = draw.textsize(title, self.style['font'])
             if is_vertical:
