@@ -242,8 +242,10 @@ class DecoratorBase(object):
     def _get_current_font(self):
         if self.style['font'] is None:
             self.style['font'] = self._load_default_font()
-        else:
+        elif isinstance(self.style['font'], str):
             self.style['font'] = self._load_font()
+        else:
+            pass  # assume self.style['font'] has already been assigned as Font obj. FIXME
 
     def _add_text(self, txt, **kwargs):
         # synchronize kwargs into style
