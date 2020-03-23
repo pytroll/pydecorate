@@ -16,6 +16,9 @@ matrix:
   - env: PYTHON_VERSION=3.8
     os: linux
     language: generic
+  - env: PYTHON_VERSION=3.7
+    os: linux
+    language: generic
   - env: PYTHON_VERSION=3.8
     os: osx
     language: generic
