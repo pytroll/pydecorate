@@ -21,21 +21,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-try:
-    with open("./README", "r") as fd:
-        long_description = fd.read()
-except IOError:
-    long_description = ""
-
-
 from setuptools import setup
-import imp
 
-version = imp.load_source('pydecorate.version', 'pydecorate/version.py')
+try:
+    # HACK: https://github.com/pypa/setuptools_scm/issues/190#issuecomment-351181286
+    # Stop setuptools_scm from including all repository files
+    import setuptools_scm.integration
+    setuptools_scm.integration.find_files = lambda _: []
+except ImportError:
+    pass
+
+with open("./README.rst", "r") as fd:
+    long_description = fd.read()
+
 
 setup(name='pydecorate',
-      version=version.__version__,
       description='Decorating PIL images: logos, texts, pallettes',
+      long_description=long_description,
       author='Hrobjartur Thorsteinsson',
       author_email='thorsteinssonh@gmail.com',
       classifiers=["Development Status :: 4 - Beta",
@@ -46,7 +48,6 @@ setup(name='pydecorate',
                    "Programming Language :: Python",
                    "Topic :: Scientific/Engineering"],
       url="https://github.com/pytroll/pydecorate",
-      long_description=long_description,
       license='GPLv3',
       packages=['pydecorate'],
       include_package_data=True,
@@ -54,9 +55,11 @@ setup(name='pydecorate',
       # Project should use reStructuredText, so ensure that the docutils get
       # installed or upgraded on the target machine
       install_requires=['pillow', 'aggdraw'],
+      setup_requires=['setuptools_scm', 'setuptools_scm_git_archive'],
       scripts=[],
       data_files=[],
       # test_suite="",
-      tests_require=['pytest', 'mock'],
-      python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
+      tests_require=['pytest'],
+      python_requires='>=3.6',
+      use_scm_version={'write_to': 'pydecorate/version.py'},
       zip_safe=False)
