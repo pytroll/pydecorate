@@ -3,32 +3,27 @@ environment:
     PYTHON: "C:\\conda"
     MINICONDA_VERSION: "latest"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers\\appveyor\\windows_sdk.cmd"
-    CONDA_DEPENDENCIES: "sphinx pillow coverage mock trollimage aggdraw pytest pytest-cov"
+    CONDA_DEPENDENCIES: "sphinx pillow coverage trollimage aggdraw pytest pytest-cov"
     PIP_DEPENDENCIES: ""
     CONDA_CHANNELS: "conda-forge"
 
   matrix:
-    - PYTHON: "C:\\Python27_64"
-      PYTHON_VERSION: "2.7"
-      PYTHON_ARCH: "64"
-      NUMPY_VERSION: "stable"
-
-    - PYTHON: "C:\\Python36_64"
-      PYTHON_VERSION: "3.6"
+    - PYTHON: "C:\\Python38_64"
+      PYTHON_VERSION: "3.8"
       PYTHON_ARCH: "64"
       NUMPY_VERSION: "stable"
 
 install:
     - "git clone --depth 1 git://github.com/astropy/ci-helpers.git"
     - "powershell ci-helpers/appveyor/install-miniconda.ps1"
-    - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
-    - "activate test"
+    - "conda activate test"
+    - "pip install --no-deps -e ."
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
 test_script:
   # Build the compiled extension and run the project tests
-  - "%CMD_IN_ENV% pytest test.py"
+  - "%CMD_IN_ENV% pytest --cov=pydecorate test.py"
 
 after_test:
   # If tests are successful, create a whl package for the project.
