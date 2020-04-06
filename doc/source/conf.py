@@ -53,7 +53,7 @@ copyright = u'2013, Hrobjartur Thorsteinsson'
 # built documents.
 #
 # get version using setuptools-scm
-release = get_distribution('satpy').version
+release = get_distribution('pydecorate').version
 # The full version, including alpha/beta/rc tags.
 # for example take major/minor
 version = '.'.join(release.split('.')[:2])
