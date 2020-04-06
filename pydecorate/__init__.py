@@ -16,4 +16,10 @@
 #You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+try:
+    from .version import version as __version__  # noqa
+except ImportError:
+    # package is not installed
+    pass
+
 from pydecorate.decorator_agg import DecoratorAGG

@@ -1,3 +1,6 @@
+# Setuptools SCM version.py file
+pydecorate/version.py
+
 ### PYTHON IGNORES ###
 *.py[cod]
 __pycache__/
