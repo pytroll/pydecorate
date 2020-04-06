@@ -15,9 +15,9 @@ Welcome to the Pydecorate documentation!
 Pydecorate is a package for decorating PIL images with logos, texts, and color
 scales.
 
-The source code of the package can be found at google codes, googlecode_
+The source code of the package can be found at on GitHub_.
 
-.. _googlecode: http://code.google.com/p/pydecorate/
+.. _GitHub: https://github.com/pytroll/pydecorate
 
 Contents
 +++++++++
