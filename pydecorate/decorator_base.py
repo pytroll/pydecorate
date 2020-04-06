@@ -433,6 +433,9 @@ class DecoratorBase(object):
         # draw object
         draw = self._get_canvas(self.image)
 
+        # check for font object
+        self._get_current_font()
+
         # draw base
         px = (self.style['propagation'][0] +
               self.style['newline_propagation'][0])
