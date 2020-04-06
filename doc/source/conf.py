@@ -11,6 +11,9 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+# To generate apidoc modules:
+#     sphinx-apidoc -f -T -o source/api ../pydecorate ../pydecorate/tests
+
 import os
 import sys
 from pkg_resources import get_distribution

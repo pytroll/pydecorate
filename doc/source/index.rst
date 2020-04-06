@@ -4,10 +4,8 @@
    contain the root `toctree` directive.
 
 .. meta::
-   description: Python project adding logos, texts, and color scales to PIL
-   images
-   keywords: Python, image, PIL, Pytroll, pydecorate, trollimage, logos,
-   palette, color scale, text
+   :description: Python project adding logos, texts, and color scales to PIL images
+   :keywords: Python, image, PIL, Pytroll, pydecorate, trollimage, logos, palette, color scale, text
 
 Welcome to the Pydecorate documentation!
 =========================================
@@ -20,18 +18,17 @@ The source code of the package can be found at on GitHub_.
 .. _GitHub: https://github.com/pytroll/pydecorate
 
 Contents
-+++++++++
+++++++++
 
 .. toctree::
    :maxdepth: 3
 
    installation
    usage
-   examples
-   api
+   Pydecorate API <api/pydecorate>
 
 Indices and tables
-+++++++++++++++++++
+++++++++++++++++++
 
 * :ref:`genindex`
 * :ref:`modindex`
