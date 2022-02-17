@@ -1,24 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-# Copyright (c) 2013, 2016 Adam Dybbroe
-
-# Author(s):
-
-#   Hrobjartur Thorsteinsson <thorsteinssonh@gmail.com>
-
+#
+# Copyright (c) 2013 Pydecorate developers
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""Package building definition and script."""
 
 
 from setuptools import setup
@@ -38,12 +35,12 @@ with open("./README.rst", "r") as fd:
 setup(name='pydecorate',
       description='Decorating PIL images: logos, texts, pallettes',
       long_description=long_description,
+      long_description_content_type='text/x-rst',
       author='Hrobjartur Thorsteinsson',
       author_email='thorsteinssonh@gmail.com',
       classifiers=["Development Status :: 4 - Beta",
                    "Intended Audience :: Science/Research",
-                   "License :: OSI Approved :: GNU General Public License v3 " +
-                   "or later (GPLv3+)",
+                   "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
                    "Operating System :: OS Independent",
                    "Programming Language :: Python",
                    "Topic :: Scientific/Engineering"],
@@ -52,14 +49,11 @@ setup(name='pydecorate',
       packages=['pydecorate'],
       include_package_data=True,
       package_data={'pydecorate': ['fonts/*.ttf']},
-      # Project should use reStructuredText, so ensure that the docutils get
-      # installed or upgraded on the target machine
       install_requires=['pillow', 'aggdraw'],
       setup_requires=['setuptools_scm', 'setuptools_scm_git_archive'],
       scripts=[],
       data_files=[],
-      # test_suite="",
       tests_require=['pytest'],
-      python_requires='>=3.6',
+      python_requires='>=3.7',
       use_scm_version={'write_to': 'pydecorate/version.py'},
       zip_safe=False)
