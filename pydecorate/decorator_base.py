@@ -6,7 +6,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,166 +15,152 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""Base class and utilities for decorating images."""
+
+import copy
 
 import numpy as np
-
-try:
-    from PIL import Image, ImageFont
-except ImportError:
-    print("ImportError: Missing PIL image objects")
-
-try:
-    from PIL import ImageDraw
-except ImportError:
-    print("ImportError: Missing module: ImageDraw")
+from PIL import Image
 
 # style dictionary defines default options
 # some only used by aggdraw version of the decorator
 default_style_dict = {
-    'cursor': [0, 0],
-    'margins': [5, 5],
-    'height': 60,
-    'width': 60,
-    'propagation': [1, 0],
-    'newline_propagation': [0, 1],
-    'alignment': [0.0, 0.0],
-    'bg': 'white',
-    'bg_opacity': 127,
-    'line': "black",
-    'line_width': 1,
-    'line_opacity': 255,
-    'outline': None,
-    'outline_width': 1,
-    'outline_opacity': 255,
-    'fill': 'black',
-    'fill_opacity': 255,
-    'font': None,
-    'font_size': 16,
-    'start_border': [0, 0],
-    'extend': False,
-    'tick_marks': 1.0,
-    'minor_tick_marks': 0.5,
-    'unit': None
+    "cursor": [0, 0],
+    "margins": [5, 5],
+    "height": 60,
+    "width": 60,
+    "propagation": [1, 0],
+    "newline_propagation": [0, 1],
+    "alignment": [0.0, 0.0],
+    "bg": "white",
+    "bg_opacity": 127,
+    "line": "black",
+    "line_width": 1,
+    "line_opacity": 255,
+    "outline": None,
+    "outline_width": 1,
+    "outline_opacity": 255,
+    "fill": "black",
+    "fill_opacity": 255,
+    "font": None,
+    "font_size": 16,
+    "start_border": [0, 0],
+    "extend": False,
+    "tick_marks": 1.0,
+    "minor_tick_marks": 0.5,
+    "unit": None,
 }
 
 
 class DecoratorBase(object):
+    """Base class for drawing decorations on an Image."""
 
     def __init__(self, image):
-        """
-        Probably users only want to instantiate DecoratorAgg or the Decorator implementations.
-        DecoratorBase is a base class outlining common operations and interface for the Decorator (PIL drawing engine) and DecoratorAgg (Aggdraw drawing engine)
-        """
+        """Initialize decorator and create handle to provided image object."""
         self.image = image
-
-        import copy
         self.style = copy.deepcopy(default_style_dict)
 
     def set_style(self, **kwargs):
         self.style.update(kwargs)
-        self.style['cursor'] = list(self.style['cursor'])
+        self.style["cursor"] = list(self.style["cursor"])
 
     def _finalize(self, draw):
-        """Do any need finalization of the drawing
-        """
+        """Do any needed finalization of the drawing."""
         pass
 
     def write_vertically(self):
         # top-right
-        if self.style['alignment'][0] == 1.0 and self.style['alignment'][1] == 0.0:
-            self.style['propagation'] = [0, 1]
-            self.style['newline_propagation'] = [-1, 0]
+        if self.style["alignment"][0] == 1.0 and self.style["alignment"][1] == 0.0:
+            self.style["propagation"] = [0, 1]
+            self.style["newline_propagation"] = [-1, 0]
         # bottom-right
-        elif self.style['alignment'][0] == 1.0 and self.style['alignment'][1] == 1.0:
-            self.style['propagation'] = [0, -1]
-            self.style['newline_propagation'] = [-1, 0]
+        elif self.style["alignment"][0] == 1.0 and self.style["alignment"][1] == 1.0:
+            self.style["propagation"] = [0, -1]
+            self.style["newline_propagation"] = [-1, 0]
         # bottom-left
-        elif self.style['alignment'][0] == 0.0 and self.style['alignment'][1] == 1.0:
-            self.style['propagation'] = [0, -1]
-            self.style['newline_propagation'] = [1, 0]
+        elif self.style["alignment"][0] == 0.0 and self.style["alignment"][1] == 1.0:
+            self.style["propagation"] = [0, -1]
+            self.style["newline_propagation"] = [1, 0]
         # top-left and other alignments
         else:
-            self.style['propagation'] = [0, 1]
-            self.style['newline_propagation'] = [1, 0]
+            self.style["propagation"] = [0, 1]
+            self.style["newline_propagation"] = [1, 0]
 
     def write_horizontally(self):
         # top-right
-        if self.style['alignment'][0] == 1.0 and self.style['alignment'][1] == 0.0:
-            self.style['propagation'] = [-1, 0]
-            self.style['newline_propagation'] = [0, 1]
+        if self.style["alignment"][0] == 1.0 and self.style["alignment"][1] == 0.0:
+            self.style["propagation"] = [-1, 0]
+            self.style["newline_propagation"] = [0, 1]
         # bottom-right
-        elif self.style['alignment'][0] == 1.0 and self.style['alignment'][1] == 1.0:
-            self.style['propagation'] = [-1, 0]
-            self.style['newline_propagation'] = [0, -1]
+        elif self.style["alignment"][0] == 1.0 and self.style["alignment"][1] == 1.0:
+            self.style["propagation"] = [-1, 0]
+            self.style["newline_propagation"] = [0, -1]
         # bottom-left
-        elif self.style['alignment'][0] == 0.0 and self.style['alignment'][1] == 1.0:
-            self.style['propagation'] = [1, 0]
-            self.style['newline_propagation'] = [0, -1]
+        elif self.style["alignment"][0] == 0.0 and self.style["alignment"][1] == 1.0:
+            self.style["propagation"] = [1, 0]
+            self.style["newline_propagation"] = [0, -1]
         # top-left and other alignments
         else:
-            self.style['propagation'] = [1, 0]
-            self.style['newline_propagation'] = [0, 1]
+            self.style["propagation"] = [1, 0]
+            self.style["newline_propagation"] = [0, 1]
 
     def align_bottom(self):
-        if self.style['alignment'][1] != 1.0:
-            self.style['alignment'][1] = 1.0
-            self.style['newline_propagation'][
-                1] = -self.style['newline_propagation'][1]
-            self.style['propagation'][1] = -self.style['propagation'][1]
+        if self.style["alignment"][1] != 1.0:
+            self.style["alignment"][1] = 1.0
+            self.style["newline_propagation"][1] = -self.style["newline_propagation"][1]
+            self.style["propagation"][1] = -self.style["propagation"][1]
             self.home()
 
     def align_top(self):
-        if self.style['alignment'][1] != 0.0:
-            self.style['alignment'][1] = 0.0
-            self.style['newline_propagation'][
-                1] = -self.style['newline_propagation'][1]
-            self.style['propagation'][1] = -self.style['propagation'][1]
+        if self.style["alignment"][1] != 0.0:
+            self.style["alignment"][1] = 0.0
+            self.style["newline_propagation"][1] = -self.style["newline_propagation"][1]
+            self.style["propagation"][1] = -self.style["propagation"][1]
             self.home()
 
     def align_right(self):
-        if self.style['alignment'][0] != 1.0:
-            self.style['alignment'][0] = 1.0
-            self.style['propagation'][0] = -self.style['propagation'][0]
-            self.style['newline_propagation'][
-                0] = -self.style['newline_propagation'][0]
+        if self.style["alignment"][0] != 1.0:
+            self.style["alignment"][0] = 1.0
+            self.style["propagation"][0] = -self.style["propagation"][0]
+            self.style["newline_propagation"][0] = -self.style["newline_propagation"][0]
             self.home()
 
     def align_left(self):
-        if self.style['alignment'][0] != 0.0:
-            self.style['alignment'][0] = 0.0
-            self.style['propagation'][0] = -self.style['propagation'][0]
-            self.style['newline_propagation'][
-                0] = -self.style['newline_propagation'][0]
+        if self.style["alignment"][0] != 0.0:
+            self.style["alignment"][0] = 0.0
+            self.style["propagation"][0] = -self.style["propagation"][0]
+            self.style["newline_propagation"][0] = -self.style["newline_propagation"][0]
             self.home()
 
     def home(self):
-        self.style['cursor'][0] = int(
-            self.style['alignment'][0] * self.image.size[0])
-        self.style['cursor'][1] = int(
-            self.style['alignment'][1] * self.image.size[1])
+        self.style["cursor"][0] = int(self.style["alignment"][0] * self.image.size[0])
+        self.style["cursor"][1] = int(self.style["alignment"][1] * self.image.size[1])
 
     def rewind(self):
-        if self.style['newline_propagation'][0] == 0:
-            self.style['cursor'][0] = int(
-                self.style['alignment'][0] * self.image.size[0])
-        if self.style['newline_propagation'][1] == 0:
-            self.style['cursor'][1] = int(
-                self.style['alignment'][1] * self.image.size[1])
+        if self.style["newline_propagation"][0] == 0:
+            self.style["cursor"][0] = int(
+                self.style["alignment"][0] * self.image.size[0]
+            )
+        if self.style["newline_propagation"][1] == 0:
+            self.style["cursor"][1] = int(
+                self.style["alignment"][1] * self.image.size[1]
+            )
 
     def new_line(self):
+        """Set position of next decoration under the previously added decorations."""
         # set new line
-        self.style['cursor'][
-            0] += self.style['newline_propagation'][0] * self.style['width']
-        self.style['cursor'][
-            1] += self.style['newline_propagation'][1] * self.style['height']
+        self.style["cursor"][0] += (
+            self.style["newline_propagation"][0] * self.style["width"]
+        )
+        self.style["cursor"][1] += (
+            self.style["newline_propagation"][1] * self.style["height"]
+        )
         # rewind
         self.rewind()
 
     def _step_cursor(self):
-        self.style['cursor'][
-            0] += self.style['propagation'][0] * self.style['width']
-        self.style['cursor'][1] += self.style['propagation'][1] * \
-            self.style['height']
+        self.style["cursor"][0] += self.style["propagation"][0] * self.style["width"]
+        self.style["cursor"][1] += self.style["propagation"][1] * self.style["height"]
 
     # def start_border(self):
     #    self.style['start_border'] = list( self.style['cursor'] )
@@ -189,7 +175,7 @@ class DecoratorBase(object):
     #    self._finalize(draw)
 
     def _draw_polygon(self, draw, xys, **kwargs):
-        draw.polygon(xys, fill=kwargs['fill'], outline=kwargs['outline'])
+        draw.polygon(xys, fill=kwargs["fill"], outline=kwargs["outline"])
 
     def _get_canvas(self, img):
         raise NotImplementedError("Derived class implements this.")
@@ -197,11 +183,10 @@ class DecoratorBase(object):
     def _load_default_font(self):
         raise NotImplementedError("Derived class implements this.")
 
-    def _draw_text(self, draw, xy, txt, font, fill='black', align='cc', dry_run=False, **kwargs):
-        """
-        Elementary text draw routine,
-        with alignment. Returns text size.
-        """
+    def _draw_text(
+        self, draw, xy, txt, font, fill="black", align="cc", dry_run=False, **kwargs
+    ):
+        """Elementary text draw routine, with alignment. Returns text size."""
         # check for font object
         if font is None:
             font = self._load_default_font()
@@ -211,13 +196,13 @@ class DecoratorBase(object):
 
         # align text position
         x, y = xy
-        if align[0] == 'c':
+        if align[0] == "c":
             x -= tw / 2.0
-        elif align[0] == 'r':
+        elif align[0] == "r":
             x -= tw
-        if align[1] == 'c':
+        if align[1] == "c":
             y -= th / 2.0
-        elif align[1] == 'r':
+        elif align[1] == "r":
             y -= th
 
         # draw the text
@@ -227,23 +212,23 @@ class DecoratorBase(object):
         return tw, th
 
     def _check_align(self):
-        if 'align' in self.style:
-            if 'top_bottom' in self.style['align']:
-                if self.style['align']['top_bottom'] == 'top':
+        if "align" in self.style:
+            if "top_bottom" in self.style["align"]:
+                if self.style["align"]["top_bottom"] == "top":
                     self.align_top()
-                elif self.style['align']['top_bottom'] == 'bottom':
+                elif self.style["align"]["top_bottom"] == "bottom":
                     self.align_bottom()
-            if 'left_right' in self.style['align']:
-                if self.style['align']['left_right'] == 'left':
+            if "left_right" in self.style["align"]:
+                if self.style["align"]["left_right"] == "left":
                     self.align_left()
-                elif self.style['align']['left_right'] == 'right':
+                elif self.style["align"]["left_right"] == "right":
                     self.align_right()
 
     def _get_current_font(self):
-        if self.style['font'] is None:
-            self.style['font'] = self._load_default_font()
-        elif isinstance(self.style['font'], str):
-            self.style['font'] = self._load_font()
+        if self.style["font"] is None:
+            self.style["font"] = self._load_default_font()
+        elif isinstance(self.style["font"], str):
+            self.style["font"] = self._load_font()
         else:
             pass  # assume self.style['font'] has already been assigned as Font obj. FIXME
 
@@ -262,36 +247,34 @@ class DecoratorBase(object):
         x_size, y_size = self.image.size
 
         # split text into newlines '\n'
-        txt_nl = txt.split('\n')
+        txt_nl = txt.split("\n")
 
         # current xy and margins
-        x = self.style['cursor'][0]
-        y = self.style['cursor'][1]
-        mx = self.style['margins'][0]
-        my = self.style['margins'][1]
-        prev_width = self.style['width']
-        prev_height = self.style['height']
+        x = self.style["cursor"][0]
+        y = self.style["cursor"][1]
+        mx = self.style["margins"][0]
+        my = self.style["margins"][1]
+        # prev_width = self.style["width"]
+        prev_height = self.style["height"]
 
         # calculate text space
-        tw, th = draw.textsize(txt_nl[0], self.style['font'])
+        tw, th = draw.textsize(txt_nl[0], self.style["font"])
         for t in txt_nl:
-            w, tmp = draw.textsize(t, self.style['font'])
+            w, tmp = draw.textsize(t, self.style["font"])
             if w > tw:
                 tw = w
         hh = len(txt_nl) * th
 
         # set height/width for subsequent draw operations
         if prev_height < int(hh + 2 * my):
-            self.style['height'] = int(hh + 2 * my)
-        self.style['width'] = int(tw + 2 * mx)
+            self.style["height"] = int(hh + 2 * my)
+        self.style["width"] = int(tw + 2 * mx)
 
         # draw base
-        px = (self.style['propagation'][0] +
-              self.style['newline_propagation'][0])
-        py = (self.style['propagation'][1] +
-              self.style['newline_propagation'][1])
+        px = self.style["propagation"][0] + self.style["newline_propagation"][0]
+        py = self.style["propagation"][1] + self.style["newline_propagation"][1]
         x1 = x + px * (tw + 2 * mx)
-        y1 = y + py * self.style['height']
+        y1 = y + py * self.style["height"]
         self._draw_rectangle(draw, [x, y, x1, y1], **self.style)
 
         # draw
@@ -299,11 +282,16 @@ class DecoratorBase(object):
             pos_x = x + mx
             pos_y = y + i * th + my
             if py < 0:
-                pos_y += py * self.style['height']
+                pos_y += py * self.style["height"]
             if px < 0:
-                pos_x += px * self.style['width']
+                pos_x += px * self.style["width"]
             self._draw_text_line(
-                draw, (pos_x, pos_y), txt_nl[i], self.style['font'], fill=self.style['fill'])
+                draw,
+                (pos_x, pos_y),
+                txt_nl[i],
+                self.style["font"],
+                fill=self.style["fill"],
+            )
 
         # update cursor
         self._step_cursor()
@@ -311,19 +299,19 @@ class DecoratorBase(object):
         # finalize
         self._finalize(draw)
 
-    def _draw_text_line(self, draw, xy, text, font, fill='black'):
+    def _draw_text_line(self, draw, xy, text, font, fill="black"):
         draw.text(xy, text, font=font, fill=fill)
 
     def _draw_line(self, draw, xys, **kwargs):
         # inconvenient to use fill for a line so swapped def.
-        draw.line(xys, fill=kwargs['line'])
+        draw.line(xys, fill=kwargs["line"])
 
     def _draw_rectangle(self, draw, xys, **kwargs):
         # adjust extent of rectangle to draw up to but not including xys[2/3]
         xys[2] -= 1
         xys[3] -= 1
-        if kwargs['bg'] or kwargs['outline']:
-            draw.rectangle(xys, fill=kwargs['bg'], outline=kwargs['outline'])
+        if kwargs["bg"] or kwargs["outline"]:
+            draw.rectangle(xys, fill=kwargs["bg"], outline=kwargs["outline"])
 
     def _add_logo(self, logo_path, **kwargs):
         # synchronize kwargs into style
@@ -331,17 +319,17 @@ class DecoratorBase(object):
         self._check_align()
 
         # current xy and margins
-        x = self.style['cursor'][0]
-        y = self.style['cursor'][1]
+        x = self.style["cursor"][0]
+        y = self.style["cursor"][1]
 
-        mx = self.style['margins'][0]
-        my = self.style['margins'][1]
+        mx = self.style["margins"][0]
+        my = self.style["margins"][1]
 
         # draw object
         draw = self._get_canvas(self.image)
 
         # get logo image
-        logo = Image.open(logo_path, "r").convert('RGBA')
+        logo = Image.open(logo_path, "r").convert("RGBA")
 
         # default size is _line_size set by previous draw operation
         # else do not resize
@@ -350,24 +338,22 @@ class DecoratorBase(object):
 
         # default logo sizes ...
         # use previously set line_size
-        if self.style['propagation'][0] != 0:
-            ny = self.style['height']
+        if self.style["propagation"][0] != 0:
+            ny = self.style["height"]
             nyi = int(round(ny - 2 * my))
             nxi = int(round(nyi / aspect))
-            nx = (nxi + 2 * mx)
-        elif self.style['propagation'][1] != 0:
-            nx = self.style['width']
+            nx = nxi + 2 * mx
+        elif self.style["propagation"][1] != 0:
+            nx = self.style["width"]
             nxi = int(round(nx - 2 * mx))
             nyi = int(round(nxi * aspect))
-            ny = (nyi + 2 * my)
+            ny = nyi + 2 * my
 
         logo = logo.resize((nxi, nyi), resample=Image.ANTIALIAS)
 
         # draw base
-        px = (self.style['propagation'][0] +
-              self.style['newline_propagation'][0])
-        py = (self.style['propagation'][1] +
-              self.style['newline_propagation'][1])
+        px = self.style["propagation"][0] + self.style["newline_propagation"][0]
+        py = self.style["propagation"][1] + self.style["newline_propagation"][1]
         box = [x, y, x + px * nx, y + py * ny]
         self._draw_rectangle(draw, box, **self.style)
 
@@ -375,56 +361,57 @@ class DecoratorBase(object):
         self._finalize(draw)
 
         # paste logo
-        box = [x + px * mx, y + py * my, x + px *
-               mx + px * nxi, y + py * my + py * nyi]
+        box = [x + px * mx, y + py * my, x + px * mx + px * nxi, y + py * my + py * nyi]
         self._insert_RGBA_image(logo, box)
 
         # update cursor
-        self.style['width'] = int(nx)
-        self.style['height'] = int(ny)
+        self.style["width"] = int(nx)
+        self.style["height"] = int(ny)
         self._step_cursor()
 
     def _add_scale(self, colormap, title=None, **kwargs):
+        from trollimage.image import Image as TImage
+
         # synchronize kwargs into style
         self.set_style(**kwargs)
 
         # sizes, current xy and margins
-        x = self.style['cursor'][0]
-        y = self.style['cursor'][1]
-        mx = self.style['margins'][0]
-        my = self.style['margins'][1]
+        x = self.style["cursor"][0]
+        y = self.style["cursor"][1]
+        mx = self.style["margins"][0]
+        my = self.style["margins"][1]
         x_size, y_size = self.image.size
 
         # horizontal/vertical?
         is_vertical = False
-        if self.style['propagation'][1] != 0:
+        if self.style["propagation"][1] != 0:
             is_vertical = True
 
         # left/right?
         is_right = False
-        if self.style['alignment'][0] == 1.0:
+        if self.style["alignment"][0] == 1.0:
             is_right = True
 
         # top/bottom?
         is_bottom = False
-        if self.style['alignment'][1] == 1.0:
+        if self.style["alignment"][1] == 1.0:
             is_bottom = True
 
         # adjust new size based on extend (fill space) style,
-        if self.style['extend']:
-            if self.style['propagation'][0] == 1:
-                self.style['width'] = (x_size - x)
-            elif self.style['propagation'][0] == -1:
-                self.style['width'] = x
-            if self.style['propagation'][1] == 1:
-                self.style['height'] = (y_size - y)
-            elif self.style['propagation'][1] == -1:
-                self.style['height'] = y
+        if self.style["extend"]:
+            if self.style["propagation"][0] == 1:
+                self.style["width"] = x_size - x
+            elif self.style["propagation"][0] == -1:
+                self.style["width"] = x
+            if self.style["propagation"][1] == 1:
+                self.style["height"] = y_size - y
+            elif self.style["propagation"][1] == -1:
+                self.style["height"] = y
 
         # set scale spacer for units and other
         x_spacer = 0
         y_spacer = 0
-        if self.style['unit']:
+        if self.style["unit"]:
             if is_vertical:
                 y_spacer = 40
             else:
@@ -437,31 +424,29 @@ class DecoratorBase(object):
         self._get_current_font()
 
         # draw base
-        px = (self.style['propagation'][0] +
-              self.style['newline_propagation'][0])
-        py = (self.style['propagation'][1] +
-              self.style['newline_propagation'][1])
-        x1 = x + px * self.style['width']
-        y1 = y + py * self.style['height']
+        px = self.style["propagation"][0] + self.style["newline_propagation"][0]
+        py = self.style["propagation"][1] + self.style["newline_propagation"][1]
+        x1 = x + px * self.style["width"]
+        y1 = y + py * self.style["height"]
         self._draw_rectangle(draw, [x, y, x1, y1], **self.style)
 
         # scale dimensions
-        scale_width = self.style['width'] - 2 * mx - x_spacer
-        scale_height = self.style['height'] - 2 * my - y_spacer
+        scale_width = self.style["width"] - 2 * mx - x_spacer
+        scale_height = self.style["height"] - 2 * my - y_spacer
 
         # generate color scale image obj inset by margin size mx my,
-        from trollimage.image import Image as TImage
-
-        #### THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION ####
+        # TODO: THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION
         minval, maxval = colormap.values[0], colormap.values[-1]
-        
+
         if is_vertical:
-            linedata = np.ones(
-                (scale_width, 1)) * np.arange(minval, maxval, float(maxval - minval) / scale_height)
+            linedata = np.ones((scale_width, 1)) * np.arange(
+                minval, maxval, float(maxval - minval) / scale_height
+            )
             linedata = linedata.transpose()
         else:
-            linedata = np.ones(
-                (scale_height, 1)) * np.arange(minval, maxval, float(maxval - minval) / scale_width)
+            linedata = np.ones((scale_height, 1)) * np.arange(
+                minval, maxval, float(maxval - minval) / scale_width
+            )
 
         timg = TImage(linedata, mode="L")
         timg.colorize(colormap)
@@ -479,59 +464,93 @@ class DecoratorBase(object):
         draw = self._get_canvas(self.image)
 
         # draw tick marks
-        val_steps = _round_arange2(minval, maxval, self.style['tick_marks'])
-        minor_steps = _round_arange(
-            minval, maxval, self.style['minor_tick_marks'])
+        val_steps = _round_arange2(minval, maxval, self.style["tick_marks"])
+        minor_steps = _round_arange(minval, maxval, self.style["minor_tick_marks"])
 
-        ffra, fpow = _optimize_scale_numbers(
-            minval, maxval, self.style['tick_marks'])
+        ffra, fpow = _optimize_scale_numbers(minval, maxval, self.style["tick_marks"])
         form = "%" + "." + str(ffra) + "f"
         last_x = x + px * mx
         last_y = y + py * my
         ref_w, ref_h = self._draw_text(
-            draw, (0, 0), form % (val_steps[0]), dry_run=True, **self.style)
+            draw, (0, 0), form % (val_steps[0]), dry_run=True, **self.style
+        )
 
         if is_vertical:
             # major
             offset_start = val_steps[0] - minval
             offset_end = val_steps[-1] - maxval
-            y_steps = py * (val_steps - minval - offset_start -
-                            offset_end) * scale_height / (maxval - minval) + y + py * my
+            y_steps = (
+                py
+                * (val_steps - minval - offset_start - offset_end)
+                * scale_height
+                / (maxval - minval)
+                + y
+                + py * my
+            )
             y_steps = y_steps[::-1]
             for i, ys in enumerate(y_steps):
                 self._draw_line(
-                    draw, [(x + px * mx, ys), (x + px * (mx + scale_width / 3.0), ys)], **self.style)
+                    draw,
+                    [(x + px * mx, ys), (x + px * (mx + scale_width / 3.0), ys)],
+                    **self.style,
+                )
                 if abs(ys - last_y) > ref_h:
                     self._draw_text(
-                        draw, (x + px * (mx + 2 * scale_width / 3.0), ys), (form % (val_steps[i])).strip(), **self.style)
+                        draw,
+                        (x + px * (mx + 2 * scale_width / 3.0), ys),
+                        (form % (val_steps[i])).strip(),
+                        **self.style,
+                    )
                     last_y = ys
             # minor
-            y_steps = py * (minor_steps - minval) * \
-                scale_height / (maxval - minval) + y + py * my
+            y_steps = (
+                py * (minor_steps - minval) * scale_height / (maxval - minval)
+                + y
+                + py * my
+            )
             y_steps = y_steps[::-1]
-            for i, ys in enumerate(y_steps):
+            for ys in y_steps:
                 self._draw_line(
-                    draw, [(x + px * mx, ys), (x + px * (mx + scale_width / 6.0), ys)], **self.style)
+                    draw,
+                    [(x + px * mx, ys), (x + px * (mx + scale_width / 6.0), ys)],
+                    **self.style,
+                )
         else:
             # major
-            x_steps = px * (val_steps - minval) * \
-                scale_width / (maxval - minval) + x + px * mx
+            x_steps = (
+                px * (val_steps - minval) * scale_width / (maxval - minval)
+                + x
+                + px * mx
+            )
             for i, xs in enumerate(x_steps):
                 self._draw_line(
-                    draw, [(xs, y + py * my), (xs, y + py * (my + scale_height / 3.0))], **self.style)
+                    draw,
+                    [(xs, y + py * my), (xs, y + py * (my + scale_height / 3.0))],
+                    **self.style,
+                )
                 if abs(xs - last_x) > ref_w:
                     self._draw_text(
-                        draw, (xs, y + py * (my + 2 * scale_height / 3.0)), (form % (val_steps[i])).strip(), **self.style)
+                        draw,
+                        (xs, y + py * (my + 2 * scale_height / 3.0)),
+                        (form % (val_steps[i])).strip(),
+                        **self.style,
+                    )
                     last_x = xs
             # minor
-            x_steps = px * (minor_steps - minval) * \
-                scale_width / (maxval - minval) + x + px * mx
-            for i, xs in enumerate(x_steps):
+            x_steps = (
+                px * (minor_steps - minval) * scale_width / (maxval - minval)
+                + x
+                + px * mx
+            )
+            for xs in x_steps:
                 self._draw_line(
-                    draw, [(xs, y + py * my), (xs, y + py * (my + scale_height / 6.0))], **self.style)
+                    draw,
+                    [(xs, y + py * my), (xs, y + py * (my + scale_height / 6.0))],
+                    **self.style,
+                )
 
         # draw unit and/or power if set
-        if self.style['unit']:
+        if self.style["unit"]:
             # calculate position
             if is_vertical:
                 if is_right:
@@ -546,14 +565,14 @@ class DecoratorBase(object):
                 else:
                     y_ = y + my + scale_height / 2.0
             # draw marking
-            self._draw_text(draw, (x_, y_), self.style['unit'], **self.style)
+            self._draw_text(draw, (x_, y_), self.style["unit"], **self.style)
 
         if title:
             # check for font object
             self._get_current_font()
 
             # calculate position
-            tw, th = draw.textsize(title, self.style['font'])
+            tw, th = draw.textsize(title, self.style["font"])
             if is_vertical:
                 # TODO: Rotate the text?
                 if is_right:
@@ -592,12 +611,12 @@ class DecoratorBase(object):
 
 
 def _round_arange(val_min, val_max, dval):
-    """
-    Returns an array of values in the range from valmin to valmax
-    but with stepping, dval. This is similar to numpy.arange except
+    """Get an array of values in the range from valmin to valmax but with stepping by dval.
+
+    This is similar to numpy.arange except
     the values must be rounded to the nearest multiple of dval.
     """
-    delta = (val_max - val_min)
+    delta = val_max - val_min
     vals = np.arange(val_min, val_max, np.sign(delta) * dval)
     round_vals = vals - vals % dval
     if round_vals[0] < val_min:
@@ -606,12 +625,12 @@ def _round_arange(val_min, val_max, dval):
 
 
 def _round_arange2(val_min, val_max, dval):
-    """
-    Returns an array of values in the range from valmin to valmax
-    but with stepping, dval. This is similar to numpy.linspace except
+    """Get an array of values in the range from valmin to valmax with stepping by dval.
+
+    This is similar to numpy.linspace except
     the values must be rounded to the nearest multiple of dval.
     The difference to _round_arange is that the return values include
-    also the bounary value val_max.
+    also the boundary value val_max.
     """
     val_min_round = val_min + (dval - val_min % dval) % dval
     val_max_round = val_max - val_max % dval
@@ -622,9 +641,10 @@ def _round_arange2(val_min, val_max, dval):
 
 
 def _optimize_scale_numbers(minval, maxval, dval):
-    """
-    find a suitable number format, A and B in "%A.Bf" and power if numbers are large
-    for display of scale numbers.
+    """Find a suitable number format for display of scale numbers.
+
+    Returns:
+        A and B in "%A.Bf" and power if numbers are large.
     """
     ffra = 1
     # no fractions, so turn off remainder
