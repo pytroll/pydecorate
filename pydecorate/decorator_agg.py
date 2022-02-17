@@ -1,7 +1,7 @@
-# pydecorate - python module for labelling
-# and adding colour scales to images
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 #
-# Copyright (C) 2011, 2016  Hrobjartur Thorsteinsson
+# Copyright (C) 2011  Hrobjartur Thorsteinsson
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
