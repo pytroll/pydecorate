@@ -46,8 +46,7 @@ jobs:
       - name: Install Pydecorate
         shell: bash -l {0}
         run: |
-          pip install sphinx sphinx_rtd_theme sphinxcontrib-apidoc; \
-          pip install -e .
+          pip install -e .[docs]
 
       - name: Run Sphinx Build
         shell: bash -l {0}

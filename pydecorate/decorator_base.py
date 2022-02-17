@@ -21,7 +21,11 @@ import copy
 
 import numpy as np
 from PIL import Image
-from trollimage.image import Image as TImage
+
+try:
+    from trollimage.image import Image as TImage
+except ImportError:
+    TImage = None
 
 # style dictionary defines default options
 # some only used by aggdraw version of the decorator
@@ -746,6 +750,11 @@ class DecoratorBase(object):
 def _create_colorbar_image(
     colormap, minval, maxval, scale_height, scale_width, is_vertical
 ):
+    if TImage is None:
+        raise ImportError(
+            "Missing 'trollimage' dependency. Required colorbar creation."
+        )
+
     if is_vertical:
         linedata = np.ones((scale_width, 1)) * np.arange(
             minval, maxval, float(maxval - minval) / scale_height
