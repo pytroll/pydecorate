@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Package building definition and script."""
 
+import sys
 
 from setuptools import setup
 
@@ -32,6 +33,9 @@ except ImportError:
 with open("./README.rst", "r") as fd:
     long_description = fd.read()
 
+tests_require = ["pytest", "pytest-cov", "trollimage"]
+if sys.platform.startswith("win"):
+    tests_require.append("freetype-py")
 
 setup(
     name="pydecorate",
@@ -59,7 +63,7 @@ setup(
     data_files=[],
     python_requires=">=3.7",
     extras_require={
-        "tests": ["pytest", "pytest-cov", "trollimage"],
+        "tests": tests_require,
     },
     use_scm_version={"write_to": "pydecorate/version.py"},
     zip_safe=False,
