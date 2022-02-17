@@ -59,7 +59,7 @@ setup(
     data_files=[],
     python_requires=">=3.7",
     extras_require={
-        "tests": ["pytest", "pytest-cov"],
+        "tests": ["pytest", "pytest-cov", "trollimage"],
     },
     use_scm_version={"write_to": "pydecorate/version.py"},
     zip_safe=False,
