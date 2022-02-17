@@ -597,7 +597,8 @@ def _round_arange(val_min, val_max, dval):
     but with stepping, dval. This is similar to numpy.arange except
     the values must be rounded to the nearest multiple of dval.
     """
-    vals = np.arange(val_min, val_max, dval)
+    delta = (val_max - val_min)
+    vals = np.arange(val_min, val_max, np.sign(delta) * dval)
     round_vals = vals - vals % dval
     if round_vals[0] < val_min:
         round_vals = round_vals[1:]
@@ -614,7 +615,7 @@ def _round_arange2(val_min, val_max, dval):
     """
     val_min_round = val_min + (dval - val_min % dval) % dval
     val_max_round = val_max - val_max % dval
-    n_points = int((val_max_round - val_min_round) / dval) + 1
+    n_points = int(abs(val_max_round - val_min_round) / dval) + 1
     vals = np.linspace(val_min_round, val_max_round, num=n_points)
 
     return vals
