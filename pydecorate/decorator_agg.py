@@ -17,23 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Aggdraw-based image decoration class."""
 
+import aggdraw
 from pkg_resources import resource_filename
 
 from pydecorate.decorator_base import DecoratorBase
 
-try:
-    import aggdraw
-except ImportError:
-    aggdraw = None
-
 
 class DecoratorAGG(DecoratorBase):
     """Aggdraw-based image decoration class."""
-
-    def __init__(self, image):
-        if aggdraw is None:
-            raise ImportError("Missing 'aggdraw' dependency.")
-        super().__init__(image)
 
     def add_scale(self, colormap, **kwargs):
         self._add_scale(colormap, **kwargs)
