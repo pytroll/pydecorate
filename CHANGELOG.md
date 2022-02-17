@@ -1,3 +1,20 @@
+## Version 0.3.2 (2022/02/17)
+
+### Issues Closed
+
+* [Issue 17](https://github.com/pytroll/pydecorate/issues/17) - pydecorate.DecoratorAGG: How to put text/colorbar outside of image and control width of colorbar.
+
+In this release 1 issue was closed.
+
+### Pull Requests Merged
+
+#### Bugs fixed
+
+* [PR 18](https://github.com/pytroll/pydecorate/pull/18) - Fix colorbar creation when limits are inverted
+
+In this release 1 pull request was closed.
+
+
 ## Version 0.3.1 (2020/04/06)
 
 ### Pull Requests Merged
