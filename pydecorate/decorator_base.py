@@ -21,6 +21,7 @@ import copy
 
 import numpy as np
 from PIL import Image
+from trollimage.image import Image as TImage
 
 # style dictionary defines default options
 # some only used by aggdraw version of the decorator
@@ -370,8 +371,6 @@ class DecoratorBase(object):
         self._step_cursor()
 
     def _add_scale(self, colormap, title=None, **kwargs):
-        from trollimage.image import Image as TImage
-
         # synchronize kwargs into style
         self.set_style(**kwargs)
 
@@ -383,19 +382,11 @@ class DecoratorBase(object):
         x_size, y_size = self.image.size
 
         # horizontal/vertical?
-        is_vertical = False
-        if self.style["propagation"][1] != 0:
-            is_vertical = True
-
+        is_vertical = self.style["propagation"][1] != 0
         # left/right?
-        is_right = False
-        if self.style["alignment"][0] == 1.0:
-            is_right = True
-
+        is_right = self.style["alignment"][0] == 1.0
         # top/bottom?
-        is_bottom = False
-        if self.style["alignment"][1] == 1.0:
-            is_bottom = True
+        is_bottom = self.style["alignment"][1] == 1.0
 
         # adjust new size based on extend (fill space) style,
         if self.style["extend"]:
@@ -437,20 +428,9 @@ class DecoratorBase(object):
         # generate color scale image obj inset by margin size mx my,
         # TODO: THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION
         minval, maxval = colormap.values[0], colormap.values[-1]
-
-        if is_vertical:
-            linedata = np.ones((scale_width, 1)) * np.arange(
-                minval, maxval, float(maxval - minval) / scale_height
-            )
-            linedata = linedata.transpose()
-        else:
-            linedata = np.ones((scale_height, 1)) * np.arange(
-                minval, maxval, float(maxval - minval) / scale_width
-            )
-
-        timg = TImage(linedata, mode="L")
-        timg.colorize(colormap)
-        scale = timg.pil_image()
+        scale = _create_colorbar_image(
+            colormap, minval, maxval, scale_height, scale_width, is_vertical
+        )
         ###########################################################
 
         # finalize (must be before paste)
@@ -462,134 +442,287 @@ class DecoratorBase(object):
 
         # reload draw object
         draw = self._get_canvas(self.image)
+        self._draw_colorbar_ticks(
+            draw,
+            minval,
+            maxval,
+            is_vertical,
+            scale_width,
+            scale_height,
+            px,
+            py,
+            mx,
+            my,
+            x,
+            y,
+        )
 
-        # draw tick marks
+        # draw unit and/or power if set
+        if self.style["unit"]:
+            self._add_colorbar_units(
+                draw,
+                self.style["unit"],
+                is_vertical,
+                is_right,
+                is_bottom,
+                x,
+                y,
+                mx,
+                my,
+                scale_width,
+                scale_height,
+                x_spacer,
+                y_spacer,
+            )
+
+        if title:
+            self._add_colorbar_title(
+                draw,
+                title,
+                is_vertical,
+                is_right,
+                is_bottom,
+                x,
+                y,
+                mx,
+                my,
+                scale_width,
+                scale_height,
+            )
+
+        # finalize
+        self._finalize(draw)
+
+    def _draw_colorbar_ticks(
+        self,
+        draw,
+        minval,
+        maxval,
+        is_vertical,
+        scale_width,
+        scale_height,
+        px,
+        py,
+        mx,
+        my,
+        x,
+        y,
+    ):
         val_steps = _round_arange2(minval, maxval, self.style["tick_marks"])
         minor_steps = _round_arange(minval, maxval, self.style["minor_tick_marks"])
 
         ffra, fpow = _optimize_scale_numbers(minval, maxval, self.style["tick_marks"])
         form = "%" + "." + str(ffra) + "f"
-        last_x = x + px * mx
-        last_y = y + py * my
         ref_w, ref_h = self._draw_text(
             draw, (0, 0), form % (val_steps[0]), dry_run=True, **self.style
         )
 
         if is_vertical:
-            # major
-            offset_start = val_steps[0] - minval
-            offset_end = val_steps[-1] - maxval
-            y_steps = (
-                py
-                * (val_steps - minval - offset_start - offset_end)
-                * scale_height
-                / (maxval - minval)
-                + y
-                + py * my
+            self._draw_vertical_colorbar_ticks(
+                draw,
+                minval,
+                maxval,
+                val_steps,
+                scale_width,
+                scale_height,
+                px,
+                py,
+                mx,
+                my,
+                x,
+                y,
+                minor_steps,
+                ref_h,
+                form,
             )
-            y_steps = y_steps[::-1]
-            for i, ys in enumerate(y_steps):
-                self._draw_line(
-                    draw,
-                    [(x + px * mx, ys), (x + px * (mx + scale_width / 3.0), ys)],
-                    **self.style,
-                )
-                if abs(ys - last_y) > ref_h:
-                    self._draw_text(
-                        draw,
-                        (x + px * (mx + 2 * scale_width / 3.0), ys),
-                        (form % (val_steps[i])).strip(),
-                        **self.style,
-                    )
-                    last_y = ys
-            # minor
-            y_steps = (
-                py * (minor_steps - minval) * scale_height / (maxval - minval)
-                + y
-                + py * my
-            )
-            y_steps = y_steps[::-1]
-            for ys in y_steps:
-                self._draw_line(
-                    draw,
-                    [(x + px * mx, ys), (x + px * (mx + scale_width / 6.0), ys)],
-                    **self.style,
-                )
         else:
-            # major
-            x_steps = (
-                px * (val_steps - minval) * scale_width / (maxval - minval)
-                + x
-                + px * mx
+            self._draw_horizontal_colorbar_ticks(
+                draw,
+                minval,
+                maxval,
+                val_steps,
+                scale_width,
+                scale_height,
+                px,
+                py,
+                mx,
+                my,
+                x,
+                y,
+                minor_steps,
+                ref_w,
+                form,
             )
-            for i, xs in enumerate(x_steps):
-                self._draw_line(
+
+    def _draw_vertical_colorbar_ticks(
+        self,
+        draw,
+        minval,
+        maxval,
+        val_steps,
+        scale_width,
+        scale_height,
+        px,
+        py,
+        mx,
+        my,
+        x,
+        y,
+        minor_steps,
+        ref_h,
+        form,
+    ):
+        # major
+        offset_start = val_steps[0] - minval
+        offset_end = val_steps[-1] - maxval
+        y_steps = (
+            py
+            * (val_steps - minval - offset_start - offset_end)
+            * scale_height
+            / (maxval - minval)
+            + y
+            + py * my
+        )
+        y_steps = y_steps[::-1]
+        last_y = y + py * my
+        for i, ys in enumerate(y_steps):
+            self._draw_line(
+                draw,
+                [(x + px * mx, ys), (x + px * (mx + scale_width / 3.0), ys)],
+                **self.style,
+            )
+            if abs(ys - last_y) > ref_h:
+                self._draw_text(
                     draw,
-                    [(xs, y + py * my), (xs, y + py * (my + scale_height / 3.0))],
+                    (x + px * (mx + 2 * scale_width / 3.0), ys),
+                    (form % (val_steps[i])).strip(),
                     **self.style,
                 )
-                if abs(xs - last_x) > ref_w:
-                    self._draw_text(
-                        draw,
-                        (xs, y + py * (my + 2 * scale_height / 3.0)),
-                        (form % (val_steps[i])).strip(),
-                        **self.style,
-                    )
-                    last_x = xs
-            # minor
-            x_steps = (
-                px * (minor_steps - minval) * scale_width / (maxval - minval)
-                + x
-                + px * mx
+                last_y = ys
+        # minor
+        y_steps = (
+            py * (minor_steps - minval) * scale_height / (maxval - minval) + y + py * my
+        )
+        y_steps = y_steps[::-1]
+        for ys in y_steps:
+            self._draw_line(
+                draw,
+                [(x + px * mx, ys), (x + px * (mx + scale_width / 6.0), ys)],
+                **self.style,
             )
-            for xs in x_steps:
-                self._draw_line(
+
+    def _draw_horizontal_colorbar_ticks(
+        self,
+        draw,
+        minval,
+        maxval,
+        val_steps,
+        scale_width,
+        scale_height,
+        px,
+        py,
+        mx,
+        my,
+        x,
+        y,
+        minor_steps,
+        ref_w,
+        form,
+    ):
+        # major
+        x_steps = (
+            px * (val_steps - minval) * scale_width / (maxval - minval) + x + px * mx
+        )
+        last_x = x + px * mx
+        for i, xs in enumerate(x_steps):
+            self._draw_line(
+                draw,
+                [(xs, y + py * my), (xs, y + py * (my + scale_height / 3.0))],
+                **self.style,
+            )
+            if abs(xs - last_x) > ref_w:
+                self._draw_text(
                     draw,
-                    [(xs, y + py * my), (xs, y + py * (my + scale_height / 6.0))],
+                    (xs, y + py * (my + 2 * scale_height / 3.0)),
+                    (form % (val_steps[i])).strip(),
                     **self.style,
                 )
+                last_x = xs
+        # minor
+        x_steps = (
+            px * (minor_steps - minval) * scale_width / (maxval - minval) + x + px * mx
+        )
+        for xs in x_steps:
+            self._draw_line(
+                draw,
+                [(xs, y + py * my), (xs, y + py * (my + scale_height / 6.0))],
+                **self.style,
+            )
 
-        # draw unit and/or power if set
-        if self.style["unit"]:
-            # calculate position
-            if is_vertical:
-                if is_right:
-                    x_ = x - mx - scale_width / 2.0
-                else:
-                    x_ = x + mx + scale_width / 2.0
-                y_ = y + my + scale_height + y_spacer / 2.0
+    def _add_colorbar_units(
+        self,
+        draw,
+        unit,
+        is_vertical,
+        is_right,
+        is_bottom,
+        x,
+        y,
+        mx,
+        my,
+        scale_width,
+        scale_height,
+        x_spacer,
+        y_spacer,
+    ):
+        if is_vertical:
+            if is_right:
+                x_ = x - mx - scale_width / 2.0
             else:
-                x_ = x + mx + scale_width + x_spacer / 2.0
-                if is_bottom:
-                    y_ = y - my - scale_height / 2.0
-                else:
-                    y_ = y + my + scale_height / 2.0
-            # draw marking
-            self._draw_text(draw, (x_, y_), self.style["unit"], **self.style)
-
-        if title:
-            # check for font object
-            self._get_current_font()
-
-            # calculate position
-            tw, th = draw.textsize(title, self.style["font"])
-            if is_vertical:
-                # TODO: Rotate the text?
-                if is_right:
-                    x = x - mx - scale_width - tw
-                else:
-                    x = x + mx + scale_width + tw
-                y = y + my + scale_height / 2.0
+                x_ = x + mx + scale_width / 2.0
+            y_ = y + my + scale_height + y_spacer / 2.0
+        else:
+            x_ = x + mx + scale_width + x_spacer / 2.0
+            if is_bottom:
+                y_ = y - my - scale_height / 2.0
             else:
-                x = x + mx + scale_width / 2.0
-                if is_bottom:
-                    y = y - my - scale_height - th
-                else:
-                    y = y + my + scale_height + th
-            self._draw_text(draw, (x, y), title, **self.style)
+                y_ = y + my + scale_height / 2.0
+        # draw marking
+        self._draw_text(draw, (x_, y_), unit, **self.style)
 
-        # finalize
-        self._finalize(draw)
+    def _add_colorbar_title(
+        self,
+        draw,
+        title,
+        is_vertical,
+        is_right,
+        is_bottom,
+        x,
+        y,
+        mx,
+        my,
+        scale_width,
+        scale_height,
+    ):
+        # check for font object
+        self._get_current_font()
+
+        # calculate position
+        tw, th = draw.textsize(title, self.style["font"])
+        if is_vertical:
+            # TODO: Rotate the text?
+            if is_right:
+                x = x - mx - scale_width - tw
+            else:
+                x = x + mx + scale_width + tw
+            y = y + my + scale_height / 2.0
+        else:
+            x = x + mx + scale_width / 2.0
+            if is_bottom:
+                y = y - my - scale_height - th
+            else:
+                y = y + my + scale_height + th
+        self._draw_text(draw, (x, y), title, **self.style)
 
     def _form_xy_box(self, box):
         newbox = box + []
@@ -608,6 +741,24 @@ class DecoratorBase(object):
         crop = self.image.crop(box)
         comp = Image.composite(img, crop, img)
         self.image.paste(comp, box)
+
+
+def _create_colorbar_image(
+    colormap, minval, maxval, scale_height, scale_width, is_vertical
+):
+    if is_vertical:
+        linedata = np.ones((scale_width, 1)) * np.arange(
+            minval, maxval, float(maxval - minval) / scale_height
+        )
+        linedata = linedata.transpose()
+    else:
+        linedata = np.ones((scale_height, 1)) * np.arange(
+            minval, maxval, float(maxval - minval) / scale_width
+        )
+
+    timg = TImage(linedata, mode="L")
+    timg.colorize(colormap)
+    return timg.pil_image()
 
 
 def _round_arange(val_min, val_max, dval):
