@@ -1,0 +1,10 @@
+name: test-environment
+channels:
+  - conda-forge
+dependencies:
+  - numpy
+  - pillow
+  - aggdraw
+  - pytest
+  - pytest-cov
+  - trollimage

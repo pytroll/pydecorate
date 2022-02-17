@@ -34,7 +34,7 @@ demonstration logos:
 
   >>> dc.add_logo("logos/pytroll_light_big.png",height=80.0)
   >>> dc.add_logo("logos/NASA_Logo.gif")
-  >>> 
+  >>>
   >>> img.show()
 
 .. image:: images/logo_image.png
@@ -49,7 +49,7 @@ To add text, you could do:
   >>> dc.add_text("MSG SEVIRI\nThermal blue marble\n1/1/1977 00:00")
   >>> dc.add_logo("logos/pytroll_light_big.png")
   >>> dc.add_logo("logos/NASA_Logo.gif")
-  >>> 
+  >>>
   >>> img.show()
 
 .. image:: images/text_and_logo_image.png
@@ -74,7 +74,7 @@ scales and legends (DRAFT)
 ++++++++++++++++++++++++++
 
 PyDecorate can work with trollimage colormap objects to add colour scales.
-To add some logos along with a standard scale feature based on the 'rdbu' 
+To add some logos along with a standard scale feature based on the 'rdbu'
 scale from trollmap one might do as follows,
 
   >>> from trollimage.colormap import rdbu
@@ -83,14 +83,14 @@ scale from trollmap one might do as follows,
   >>> dc.add_logo("logos/pytroll_light_big.png")
   >>> dc.add_logo("logos/NASA_Logo.gif")
   >>> dc.add_scale(rdbu,extend=True)
-  
+
 .. image:: images/logo_and_scale1.png
     :width: 400px
     :align: center
 
 Note that the extend=True option sets the scale feature to extend to the full
 available space. Without this option the scale will inherit the previous width,
-or one might pass a specific width as argument. See more on this topic in the 
+or one might pass a specific width as argument. See more on this topic in the
 Styles section below.
 
 Off course the placement of the logos and scale feature is very flexible.
@@ -137,7 +137,7 @@ can be changed.
 alignment
 +++++++++
 
-Continuing from the previous example, 
+Continuing from the previous example,
 we can align the cursor to the bottom-right corner, by executing
 
   >>> dc.align_right()
@@ -242,5 +242,3 @@ to be repeated on successive calls,
 .. image:: images/style_retention.png
     :width: 400px
     :align: center
-
-

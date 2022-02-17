@@ -3,3 +3,11 @@ requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4", "setuptools_
 
 [tool.setuptools_scm]
 write_to = "pydecorate/version.py"
+
+[tool.isort]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+profile = "black"
+skip_gitignore = true
+default_section = "THIRDPARTY"
+known_first_party = "pydecorate"
+line_length = 120

@@ -6,44 +6,50 @@ NOTE: These aren't proper unit tests
 
 """
 
+import os
+
+REPOS_ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", ".."))
+FONTS_ROOT = os.path.join(REPOS_ROOT, "pydecorate", "fonts")
+DEJAVU_FONT = os.path.join(FONTS_ROOT, "DejaVuSerif.ttf")
+
 
 def test_style_retention():
+    # import aggdraw
     from PIL import Image
-    from pydecorate import DecoratorAGG
-    import aggdraw
     from trollimage.colormap import rdbu
 
-    font = aggdraw.Font("navy", "pydecorate/fonts/DejaVuSerif.ttf", size=20)
-    font_scale = aggdraw.Font("black", "pydecorate/fonts/DejaVuSerif.ttf", size=12)
+    from pydecorate import DecoratorAGG
+
+    # font = aggdraw.Font("navy", DEJAVU_FONT, size=20)
+    # font_scale = aggdraw.Font("black", DEJAVU_FONT, size=12)
 
     rdbu.colors = rdbu.colors[::-1]
     rdbu.set_range(-90, 10)
 
-    img = Image.open('BMNG_clouds_201109181715_areaT2.png')
+    img = Image.open(os.path.join(REPOS_ROOT, "BMNG_clouds_201109181715_areaT2.png"))
     dc = DecoratorAGG(img)
 
+    # dc.write_vertically()
+    # dc.add_logo("logos/pytroll_light_big.png")
+    # dc.add_logo("logos/NASA_Logo.gif",margins=[10,10],bg='yellow')
+    # dc.add_logo("logos/pytroll_light_big.png")
+    # font = aggdraw.Font("blue", DEJAVU_FONT, size=16)
+    # dc.add_text("Some text",font=font)
 
-    #dc.write_vertically()
-    #dc.add_logo("logos/pytroll_light_big.png")
-    #dc.add_logo("logos/NASA_Logo.gif",margins=[10,10],bg='yellow')
-    #dc.add_logo("logos/pytroll_light_big.png")
-    font = aggdraw.Font("blue", "pydecorate/fonts/DejaVuSerif.ttf", size=16)
-    #dc.add_text("Some text",font=font)
+    # dc.align_right()
+    dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit="K")
 
+    # dc.align_bottom()
+    # dc.add_scale(rdbu, extend=True, tick_marks=2.0, line_opacity=100, width=60)
 
-    #dc.align_right()
-    dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
-
-    #dc.align_bottom()
-    #dc.add_scale(rdbu, extend=True, tick_marks=2.0, line_opacity=100, width=60)
-
-    #dc.align_right()
-    #dc.write_vertically()
+    # dc.align_right()
+    # dc.write_vertically()
     dc.align_bottom()
-    dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit='K')
+    dc.add_scale(rdbu, extend=True, tick_marks=5.0, line_opacity=100, unit="K")
 
-    #dc.align_left()
-    #dc.add_scale(rdbu, extend=True, font=font_scale, tick_marks=2.0, minor_tick_marks=1.0, line_opacity=100, width=60, unit='K')
+    # dc.align_left()
+    # dc.add_scale(rdbu, extend=True, font=font_scale, tick_marks=2.0, minor_tick_marks=1.0,
+    #              line_opacity=100, width=60, unit='K')
 
     # img.show()
     img.save("style_retention.png")
@@ -132,9 +138,3 @@ def test_style_retention():
     #
     #
     # img.show()
-
-
-if __name__ == "__main__":
-    import sys
-    import pytest
-    sys.exit(pytest.main())
