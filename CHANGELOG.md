@@ -1,3 +1,14 @@
+## Version 0.3.3 (2022/02/17)
+
+### Pull Requests Merged
+
+#### Bugs fixed
+
+* [PR 19](https://github.com/pytroll/pydecorate/pull/19) - Add missing setuptools dependency
+
+In this release 1 pull request was closed.
+
+
 ## Version 0.3.2 (2022/02/17)
 
 ### Issues Closed
