@@ -19,6 +19,7 @@
 
 import numpy as np
 import pytest
+from numpy.typing import NDArray
 from PIL import Image
 from trollimage.colormap import rdbu
 
@@ -34,35 +35,99 @@ from pydecorate import DecoratorAGG
 @pytest.mark.parametrize("clims", [(-90, 10), (10, -90)])
 def test_colorbar(tmp_path, orientation_func_name, align_func_name, clims):
     fn = tmp_path / "test_colorbar.png"
-    img = Image.fromarray(np.zeros((200, 100, 3), dtype=np.uint8))
+    shape = (
+        (400, 100, 3) if orientation_func_name == "write_vertically" else (100, 400, 3)
+    )
+    img = Image.fromarray(np.zeros(shape, dtype=np.uint8))
     dc = DecoratorAGG(img)
     getattr(dc, align_func_name)()
     getattr(dc, orientation_func_name)()
     cmap = rdbu.set_range(*clims, inplace=False)
-    dc.add_scale(cmap, extend=True, tick_marks=5.0, line_opacity=100, unit="K")
+    dc.add_scale(
+        cmap,
+        extend=True,
+        tick_marks=40.0,
+        minor_tick_marks=20.0,
+        line_opacity=100,
+        unit="K",
+    )
     img.save(fn)
 
     # check results
     output_img = Image.open(fn)
     arr = np.array(output_img)
-    _assert_colorbar_orientation_alignment(arr, orientation_func_name, align_func_name)
+    clims_flipped = clims[0] > clims[1]
+    assert_colorbar_orientation_alignment(
+        arr, orientation_func_name, align_func_name, clims_flipped
+    )
 
 
-def _assert_colorbar_orientation_alignment(
-    img_arr, orientation_func_name, align_func_name
-):
+def assert_colorbar_orientation_alignment(
+    img_arr: NDArray,
+    orientation_func_name: str,
+    align_func_name: str,
+    clims_flipped: bool,
+) -> None:
     cbar_size = 60
+    check_idx = int(cbar_size // 2.5)  # not likely to run into ticks or tick labels
+    cbar_len_start_offset = 5
+    cbar_len_stop_offset = 45
+    cbar_offset_slice = slice(cbar_len_start_offset, -cbar_len_stop_offset)
+    # NOTE: "top" of image is row 0
     if orientation_func_name == "write_vertically":
         if align_func_name in ("align_left", "align_top", "align_bottom"):
-            assert np.unique(img_arr[:, :cbar_size]).size >= 100
+            assert np.unique(img_arr[cbar_offset_slice, check_idx]).size >= 100
             np.testing.assert_allclose(img_arr[:, cbar_size:], 0)
+            _check_color_orientation(
+                img_arr[-cbar_len_stop_offset - 20, check_idx],  # bottom pixel
+                img_arr[cbar_len_start_offset + 25, check_idx],  # top pixel
+                clims_flipped,
+            )
         else:
-            assert np.unique(img_arr[:, -cbar_size:]).size >= 100
+            assert np.unique(img_arr[:, -check_idx]).size >= 100
             np.testing.assert_allclose(img_arr[:, :-cbar_size], 0)
+            _check_color_orientation(
+                img_arr[-cbar_len_stop_offset - 20, -check_idx],  # bottom pixel
+                img_arr[cbar_len_start_offset + 25, -check_idx],  # top pixel
+                clims_flipped,
+            )
     else:
         if align_func_name in ("align_top", "align_left", "align_right"):
-            assert np.unique(img_arr[:cbar_size, :]).size >= 100
-            np.testing.assert_allclose(img_arr[-cbar_size:, :], 0)
+            assert np.unique(img_arr[check_idx, :]).size >= 100
+            np.testing.assert_allclose(img_arr[cbar_size:, :], 0)
+            _check_color_orientation(
+                img_arr[check_idx, cbar_len_start_offset + 25],  # left pixel
+                img_arr[check_idx, -cbar_len_stop_offset - 20],  # right pixel
+                clims_flipped,
+            )
         else:
-            assert np.unique(img_arr[-cbar_size:, :]).size >= 100
-            np.testing.assert_allclose(img_arr[:cbar_size, :], 0)
+            assert np.unique(img_arr[-check_idx:, :]).size >= 100
+            np.testing.assert_allclose(img_arr[:-cbar_size, :], 0)
+            _check_color_orientation(
+                img_arr[-check_idx, cbar_len_start_offset + 25],  # left pixel
+                img_arr[-check_idx, -cbar_len_stop_offset - 20],  # right pixel
+                clims_flipped,
+            )
+
+
+def _check_color_orientation(
+    first_pixel: NDArray, last_pixel: NDArray, clims_flipped: bool
+) -> None:
+    if clims_flipped:
+        _check_expected_blue_colorbar_pixel(first_pixel)
+        _check_expected_red_colorbar_pixel(last_pixel)
+    else:
+        _check_expected_red_colorbar_pixel(first_pixel)
+        _check_expected_blue_colorbar_pixel(last_pixel)
+
+
+def _check_expected_red_colorbar_pixel(red_pixel: NDArray) -> None:
+    assert red_pixel[0] > 140  # decently red
+    assert red_pixel[1] < 64  # not a lot of green
+    assert red_pixel[2] < 64  # not a lot of blue
+
+
+def _check_expected_blue_colorbar_pixel(blue_pixel: NDArray) -> None:
+    assert blue_pixel[0] < 32  # not a lot of red
+    assert blue_pixel[1] < 100  # not a lot of green
+    assert blue_pixel[2] > 128  # decently blue

@@ -757,7 +757,7 @@ def _create_colorbar_image(
 
     if is_vertical:
         linedata = np.ones((scale_width, 1)) * np.arange(
-            minval, maxval, float(maxval - minval) / scale_height
+            maxval, minval, float(minval - maxval) / scale_height
         )
         linedata = linedata.transpose()
     else:
