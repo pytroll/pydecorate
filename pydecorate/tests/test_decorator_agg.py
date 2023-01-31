@@ -17,6 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Tests for the aggdraw-based decorator."""
 
+from unittest import mock
+
 import numpy as np
 import pytest
 from numpy.typing import NDArray
@@ -43,15 +45,17 @@ def test_colorbar(tmp_path, orientation_func_name, align_func_name, clims):
     getattr(dc, align_func_name)()
     getattr(dc, orientation_func_name)()
     cmap = rdbu.set_range(*clims, inplace=False)
-    dc.add_scale(
-        cmap,
-        extend=True,
-        tick_marks=40.0,
-        minor_tick_marks=20.0,
-        line_opacity=100,
-        unit="K",
-    )
+    with mock.patch.object(dc, "_draw_text", wraps=dc._draw_text) as draw_text_wrapper:
+        dc.add_scale(
+            cmap,
+            extend=True,
+            tick_marks=40.0,
+            minor_tick_marks=20.0,
+            line_opacity=100,
+            unit="K",
+        )
     img.save(fn)
+    assert_colorbar_increasing_tick_order(draw_text_wrapper)
 
     # check results
     output_img = Image.open(fn)
@@ -60,6 +64,26 @@ def test_colorbar(tmp_path, orientation_func_name, align_func_name, clims):
     assert_colorbar_orientation_alignment(
         arr, orientation_func_name, align_func_name, clims_flipped
     )
+
+
+def assert_colorbar_increasing_tick_order(draw_text_wrapper) -> None:
+    last_float_text = None
+    for call_args in draw_text_wrapper.call_args_list:
+        if call_args.args[1] == (0, 0):
+            # skip call to draw text for size reference
+            continue
+
+        try:
+            txt_as_float = float(call_args.args[2])
+        except ValueError:
+            continue
+
+        if last_float_text is None:
+            last_float_text = txt_as_float
+            continue
+
+        assert last_float_text <= txt_as_float
+        last_float_text = txt_as_float
 
 
 def assert_colorbar_orientation_alignment(
