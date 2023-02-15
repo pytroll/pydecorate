@@ -768,7 +768,7 @@ def _create_colorbar_image(
             max_cmap_value,
             min_cmap_value,
             scale_height,
-            endpoint=True,
+            endpoint=False,
         )
         linedata = linedata.transpose()
     else:
@@ -776,7 +776,7 @@ def _create_colorbar_image(
             min_cmap_value,
             max_cmap_value,
             scale_width,
-            endpoint=True,
+            endpoint=False,
         )
 
     timg = TImage(linedata, mode="L")
