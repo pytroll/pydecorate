@@ -1,3 +1,20 @@
+## Version 0.3.4 (2023/02/15)
+
+### Issues Closed
+
+* [Issue 26](https://github.com/pytroll/pydecorate/issues/26) - Unittests are failing with unstable builds
+
+In this release 1 issue was closed.
+
+### Pull Requests Merged
+
+#### Bugs fixed
+
+* [PR 27](https://github.com/pytroll/pydecorate/pull/27) - Fix colorbar orientation to always be min->max
+
+In this release 1 pull request was closed.
+
+
 ## Version 0.3.3 (2022/02/17)
 
 ### Pull Requests Merged
