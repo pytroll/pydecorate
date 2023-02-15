@@ -763,18 +763,20 @@ def _create_colorbar_image(
         )
 
     if is_vertical:
-        # Image arrays have row 0 being the top of the image so we must flip all calculations
-        linedata = np.ones((scale_width, 1)) * np.arange(
+        # Image arrays have row 0 being the top of the image, so we must flip all calculations
+        linedata = np.ones((scale_width, 1)) * np.linspace(
             max_cmap_value,
             min_cmap_value,
-            float(min_cmap_value - max_cmap_value) / scale_height,
+            scale_height,
+            endpoint=True,
         )
         linedata = linedata.transpose()
     else:
-        linedata = np.ones((scale_height, 1)) * np.arange(
+        linedata = np.ones((scale_height, 1)) * np.linspace(
             min_cmap_value,
             max_cmap_value,
-            float(max_cmap_value - min_cmap_value) / scale_width,
+            scale_width,
+            endpoint=True,
         )
 
     timg = TImage(linedata, mode="L")
