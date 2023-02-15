@@ -61,7 +61,7 @@ setup(
     setup_requires=["setuptools_scm", "setuptools_scm_git_archive"],
     scripts=[],
     data_files=[],
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     extras_require={
         "tests": tests_require,
         "docs": ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-apidoc", "trollimage"],

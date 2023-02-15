@@ -431,9 +431,16 @@ class DecoratorBase(object):
 
         # generate color scale image obj inset by margin size mx my,
         # TODO: THIS PART TO BE INGESTED INTO A COLORMAP FUNCTION
-        minval, maxval = colormap.values[0], colormap.values[-1]
+        first_cmap_value, last_cmap_value = colormap.values[0], colormap.values[-1]
+        min_cmap_value = min(first_cmap_value, last_cmap_value)
+        max_cmap_value = max(first_cmap_value, last_cmap_value)
         scale = _create_colorbar_image(
-            colormap, minval, maxval, scale_height, scale_width, is_vertical
+            colormap,
+            min_cmap_value,
+            max_cmap_value,
+            scale_height,
+            scale_width,
+            is_vertical,
         )
         ###########################################################
 
@@ -448,8 +455,8 @@ class DecoratorBase(object):
         draw = self._get_canvas(self.image)
         self._draw_colorbar_ticks(
             draw,
-            minval,
-            maxval,
+            min_cmap_value,
+            max_cmap_value,
             is_vertical,
             scale_width,
             scale_height,
@@ -748,7 +755,7 @@ class DecoratorBase(object):
 
 
 def _create_colorbar_image(
-    colormap, minval, maxval, scale_height, scale_width, is_vertical
+    colormap, min_cmap_value, max_cmap_value, scale_height, scale_width, is_vertical
 ):
     if TImage is None:
         raise ImportError(
@@ -756,13 +763,20 @@ def _create_colorbar_image(
         )
 
     if is_vertical:
-        linedata = np.ones((scale_width, 1)) * np.arange(
-            minval, maxval, float(maxval - minval) / scale_height
+        # Image arrays have row 0 being the top of the image, so we must flip all calculations
+        linedata = np.ones((scale_width, 1)) * np.linspace(
+            max_cmap_value,
+            min_cmap_value,
+            scale_height,
+            endpoint=False,
         )
         linedata = linedata.transpose()
     else:
-        linedata = np.ones((scale_height, 1)) * np.arange(
-            minval, maxval, float(maxval - minval) / scale_width
+        linedata = np.ones((scale_height, 1)) * np.linspace(
+            min_cmap_value,
+            max_cmap_value,
+            scale_width,
+            endpoint=False,
         )
 
     timg = TImage(linedata, mode="L")
