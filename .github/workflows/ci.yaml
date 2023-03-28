@@ -8,31 +8,6 @@ concurrency:
 on: [push, pull_request]
 
 jobs:
-  website:
-    name: build website
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-
-      - name: Install Pydecorate
-        shell: bash -l {0}
-        run: |
-          pip install -e .[docs]
-
-      - name: Run Sphinx Build
-        shell: bash -l {0}
-        run: |
-          cd doc; \
-          make html SPHINXOPTS="-W"
-
   test:
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.experimental }}
