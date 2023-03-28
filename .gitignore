@@ -67,3 +67,5 @@ nosetests.xml
 
 # vi / vim swp files
 *.swp
+
+doc/source/api/*.rst
