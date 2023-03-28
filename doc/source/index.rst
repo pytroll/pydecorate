@@ -25,7 +25,7 @@ Contents
 
    installation
    usage
-   Pydecorate API <api/pydecorate>
+   Pydecorate API <api/modules>
 
 Indices and tables
 ++++++++++++++++++

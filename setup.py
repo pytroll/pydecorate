@@ -64,7 +64,13 @@ setup(
     python_requires=">=3.9",
     extras_require={
         "tests": tests_require,
-        "docs": ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-apidoc", "trollimage"],
+        "docs": [
+            "sphinx",
+            "sphinx_rtd_theme",
+            "sphinxcontrib-apidoc",
+            "trollimage",
+            "pytest",
+        ],
     },
     use_scm_version={"write_to": "pydecorate/version.py"},
     zip_safe=False,
