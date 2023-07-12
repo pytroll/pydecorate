@@ -354,7 +354,7 @@ class DecoratorBase(object):
             nyi = int(round(nxi * aspect))
             ny = nyi + 2 * my
 
-        logo = logo.resize((nxi, nyi), resample=Image.ANTIALIAS)
+        logo = logo.resize((nxi, nyi), resample=getattr(Image, "ANTIALIAS", Image.Resampling.LANCZOS))
 
         # draw base
         px = self.style["propagation"][0] + self.style["newline_propagation"][0]
