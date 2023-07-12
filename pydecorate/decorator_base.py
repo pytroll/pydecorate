@@ -278,7 +278,15 @@ class DecoratorBase(object):
         # draw base
         px = self.style["propagation"][0] + self.style["newline_propagation"][0]
         py = self.style["propagation"][1] + self.style["newline_propagation"][1]
-        x1 = x + px * (tw + 2 * mx)
+        if self.style["extend"]:
+            if self.style["propagation"][0] == 1:
+                x1 = x + px * (x_size - x)
+            elif self.style["propagation"][0] == -1:
+                x1 = x + px * x
+            else:
+                x1 = x + px * (tw + 2 * mx)
+        else:
+            x1 = x + px * (tw + 2 * mx)
         y1 = y + py * self.style["height"]
         self._draw_rectangle(draw, [x, y, x1, y1], **self.style)
 
