@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Tests for the aggdraw-based decorator."""
 
+from pathlib import Path
 from unittest import mock
 
 import numpy as np
@@ -26,6 +27,9 @@ from PIL import Image
 from trollimage.colormap import rdbu
 
 from pydecorate import DecoratorAGG
+
+HERE = Path(__file__).parent
+REPO = HERE.parent.parent
 
 
 @pytest.mark.parametrize(
@@ -64,6 +68,14 @@ def test_colorbar(tmp_path, orientation_func_name, align_func_name, clims):
     assert_colorbar_orientation_alignment(
         arr, orientation_func_name, align_func_name, clims_flipped
     )
+
+
+def test_add_logo():
+    img = Image.fromarray(np.zeros((600, 600, 3), dtype=np.uint8))
+
+    dc = DecoratorAGG(img)
+
+    dc.add_logo(REPO / "logos/pytroll_light_big.png")
 
 
 def assert_colorbar_increasing_tick_order(draw_text_wrapper) -> None:
