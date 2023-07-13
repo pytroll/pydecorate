@@ -81,6 +81,7 @@ def test_add_logo(tmp_path):
     output_img = Image.open(fn)
     arr = np.array(output_img)
     assert not (arr == 0).all()
+    assert (arr[-1,-1,:] == 0).all(), "logo is in top left corner"
 
 
 def assert_colorbar_increasing_tick_order(draw_text_wrapper) -> None:
