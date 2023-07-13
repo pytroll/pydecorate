@@ -73,7 +73,7 @@ def test_colorbar(tmp_path, orientation_func_name, align_func_name, clims):
 def test_add_logo():
     img = Image.fromarray(np.zeros((200, 200, 3), dtype=np.uint8))
     dc = DecoratorAGG(img)
-    dc.add_logo(REPO / "logos/pytroll_light_big.png")
+    dc.add_logo(REPO / "logos" / "pytroll_light_big.png")
     img.save("add_logo_pytroll.png")
 
 
