@@ -77,6 +77,11 @@ def test_add_logo(tmp_path):
     dc.add_logo(REPO / "logos" / "pytroll_light_big.png")
     img.save(fn)
 
+    # Check results
+    output_img = Image.open(fn)
+    arr = np.array(output_img)
+    assert not (arr == 0).all()
+
 
 def assert_colorbar_increasing_tick_order(draw_text_wrapper) -> None:
     last_float_text = None
