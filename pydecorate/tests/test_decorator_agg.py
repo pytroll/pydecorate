@@ -70,11 +70,12 @@ def test_colorbar(tmp_path, orientation_func_name, align_func_name, clims):
     )
 
 
-def test_add_logo():
+def test_add_logo(tmp_path):
+    fn = tmp_path / "add_logo_pytroll.png"
     img = Image.fromarray(np.zeros((200, 200, 3), dtype=np.uint8))
     dc = DecoratorAGG(img)
     dc.add_logo(REPO / "logos" / "pytroll_light_big.png")
-    img.save("add_logo_pytroll.png")
+    img.save(fn)
 
 
 def assert_colorbar_increasing_tick_order(draw_text_wrapper) -> None:
