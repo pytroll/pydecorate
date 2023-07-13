@@ -1,10 +1,6 @@
 # Setuptools SCM version.py file
 pydecorate/version.py
 
-# Files created by test run
-style_retention.png
-add_logo_pytroll.png
-
 ### PYTHON IGNORES ###
 *.py[cod]
 __pycache__/
