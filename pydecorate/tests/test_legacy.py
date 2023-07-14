@@ -13,7 +13,7 @@ FONTS_ROOT = os.path.join(REPOS_ROOT, "pydecorate", "fonts")
 DEJAVU_FONT = os.path.join(FONTS_ROOT, "DejaVuSerif.ttf")
 
 
-def test_style_retention():
+def test_style_retention(tmp_path):
     # import aggdraw
     from PIL import Image
     from trollimage.colormap import rdbu
@@ -52,7 +52,7 @@ def test_style_retention():
     #              line_opacity=100, width=60, unit='K')
 
     # img.show()
-    img.save("style_retention.png")
+    img.save(tmp_path / "style_retention.png")
 
     # #dc.align_right()
     # #dc.align_bottom()
