@@ -57,7 +57,7 @@ setup(
     packages=["pydecorate"],
     include_package_data=True,
     package_data={"pydecorate": ["fonts/*.ttf"]},
-    install_requires=["pillow", "aggdraw", "numpy", "setuptools"],
+    install_requires=["pillow", "aggdraw", "numpy"],
     setup_requires=["setuptools_scm", "setuptools_scm_git_archive"],
     scripts=[],
     data_files=[],
