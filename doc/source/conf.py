@@ -18,8 +18,7 @@ from __future__ import annotations
 
 import os
 import sys
-
-from pkg_resources import get_distribution
+from importlib.metadata import version as get_version
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -61,7 +60,7 @@ copyright = "2013, Hrobjartur Thorsteinsson"
 # built documents.
 #
 # get version using setuptools-scm
-release = get_distribution("pydecorate").version
+release = get_version("pydecorate")
 # The full version, including alpha/beta/rc tags.
 # for example take major/minor
 version = ".".join(release.split(".")[:2])
