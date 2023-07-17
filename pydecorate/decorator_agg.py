@@ -17,10 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Aggdraw-based image decoration class."""
 
+from pathlib import Path
+
 import aggdraw
-from pkg_resources import resource_filename
 
 from pydecorate.decorator_base import DecoratorBase
+
+HERE = Path(__file__).parent
 
 
 class DecoratorAGG(DecoratorBase):
@@ -30,8 +33,8 @@ class DecoratorAGG(DecoratorBase):
         self._add_scale(colormap, **kwargs)
 
     def _load_default_font(self):
-        font_path = resource_filename("pydecorate.fonts", "DejaVuSerif.ttf")
-        return aggdraw.Font("black", font_path, size=16)
+        font_path = HERE / "fonts" / "DejaVuSerif.ttf"
+        return aggdraw.Font("black", font_path.as_posix(), size=16)
 
     def _load_font(self):
         try:
