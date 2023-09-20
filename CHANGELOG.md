@@ -1,3 +1,31 @@
+## Version 0.4.0 (2023/09/20)
+
+### Issues Closed
+
+* [Issue 49](https://github.com/pytroll/pydecorate/issues/49) - pkg_resources is deprecated as an API ([PR 50](https://github.com/pytroll/pydecorate/pull/50) by [@zmoon](https://github.com/zmoon))
+* [Issue 47](https://github.com/pytroll/pydecorate/issues/47) - Add logo incompat with Pillow v10 ([PR 48](https://github.com/pytroll/pydecorate/pull/48) by [@zmoon](https://github.com/zmoon))
+* [Issue 43](https://github.com/pytroll/pydecorate/issues/43) - "OSError: cannot load font (no text renderer)"
+
+In this release 3 issues were closed.
+
+### Pull Requests Merged
+
+#### Bugs fixed
+
+* [PR 48](https://github.com/pytroll/pydecorate/pull/48) - Fix add logo functionality for Pillow v10 ([47](https://github.com/pytroll/pydecorate/issues/47))
+
+#### Features added
+
+* [PR 50](https://github.com/pytroll/pydecorate/pull/50) - Stop using `pkg_resources` ([49](https://github.com/pytroll/pydecorate/issues/49))
+* [PR 44](https://github.com/pytroll/pydecorate/pull/44) - [pre-commit.ci] pre-commit autoupdate
+
+#### Documentation changes
+
+* [PR 35](https://github.com/pytroll/pydecorate/pull/35) - Fix readthedocs building after Python 3.8 was dropped
+
+In this release 4 pull requests were closed.
+
+
 ## Version 0.3.4 (2023/02/15)
 
 ### Issues Closed
