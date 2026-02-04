@@ -1,3 +1,20 @@
+## Version 0.5.0 (2026/02/04)
+
+### Issues Closed
+
+* [Issue 98](https://github.com/pytroll/pydecorate/issues/98) - Relicense to Apache Version 2 ([PR 100](https://github.com/pytroll/pydecorate/pull/100) by [@mraspaud](https://github.com/mraspaud))
+
+In this release 1 issue was closed.
+
+### Pull Requests Merged
+
+#### Features added
+
+* [PR 100](https://github.com/pytroll/pydecorate/pull/100) - Relicense to Apache v2.0 ([98](https://github.com/pytroll/pydecorate/issues/98))
+
+In this release 1 pull request was closed.
+
+
 ## Version 0.4.0 (2023/09/20)
 
 ### Issues Closed
