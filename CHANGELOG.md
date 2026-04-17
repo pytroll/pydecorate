@@ -1,3 +1,20 @@
+## Version 0.5.1 (2026/04/17)
+
+### Issues Closed
+
+* [Issue 108](https://github.com/pytroll/pydecorate/issues/108) - pip install with --no-binary option fails
+
+In this release 1 issue was closed.
+
+### Pull Requests Merged
+
+#### Bugs fixed
+
+* [PR 109](https://github.com/pytroll/pydecorate/pull/109) - Remove setuptools_scm_git_archive from setup.py
+
+In this release 1 pull request was closed.
+
+
 ## Version 0.5.0 (2026/02/04)
 
 ### Issues Closed
