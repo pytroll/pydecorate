@@ -1,8 +1,8 @@
 pydecorate
 ==========
 
-.. image:: https://github.com/pytroll/pydecorate/workflows/CI/badge.svg?branch=main
-    :target: https://github.com/pytroll/pydecorate/actions?query=workflow%3A%22CI%22
+.. image:: https://github.com/pytroll/pydecorate/actions/workflows/ci.yaml/badge.svg?branch=main
+    :target: https://github.com/pytroll/pydecorate/actions/workflows/ci.yaml
 
 .. image:: https://coveralls.io/repos/github/pytroll/pydecorate/badge.svg?branch=main
     :target: https://coveralls.io/github/pytroll/pydecorate?branch=main
